@@ -1,0 +1,27 @@
+{%- macro _config(config) -%}
+    {%- for type, resources in config.resources.iteritems() %}
+        {#- The @ resources are a special case -#}
+        {%- if type == "@" %}
+            {%- for v in resources %}
+{{ type }}{{ v }}
+            {%- endfor %}
+        {%- else %}
+            {%- for k, params in resources.iteritems() %}
+{{ type }} {
+    Name = "{{ k }}"
+                {%- if type|lower != 'messages' and 'password' not in params|lower %}
+    Password = "{{ default_password }}"
+                {%- endif %}
+                {%- for k, v in params.iteritems() %}
+    {{ k }} = "{{ v }}"
+                {%- endfor %}
+}
+            {%- endfor %}
+        {%- endif %}
+    {%- endfor %}
+{%- endmacro -%}
+#
+# This file managed by Salt, do not edit by hand!!
+# Modify the salt pillar for bareos, instead.
+#
+{{ _config(config) }}

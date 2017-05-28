@@ -1,0 +1,17 @@
+{% import_yaml "bareos/defaults.yaml" as defaults %}
+{% import_yaml "bareos/osfamilymap.yaml" as osfamilymap %}
+{% import_yaml "bareos/osfingermap.yaml" as osfingermap %}
+
+{% set bareos = salt['grains.filter_by'](
+   defaults,
+   merge=salt['grains.filter_by'](
+         osfamilymap,
+         grain='os_family',
+         merge=salt['grains.filter_by'](
+               osfingermap,
+               grain='osfinger',
+               merge=salt['pillar.get']('bareos', {}),
+         ),
+   ),
+   base='bareos',
+) %}

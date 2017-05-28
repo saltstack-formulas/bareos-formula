@@ -1,0 +1,22 @@
+Debian-8:
+  repo:
+    distro: Debian_8.0
+Debian-9:
+  repo:
+    distro: Debian_8.0
+Ubuntu-16.04:
+  repo:
+    distro: xUbuntu_16.04
+Red Hat Enterprise Linux Server-6:
+  repo:
+    distro: RHEL_6
+Red Hat Enterprise Linux Server-7:
+  repo:
+    distro: RHEL_7
+CentOS-6:
+  repo:
+    distro: CentOS_6
+CentOS Linux-7:
+  repo:
+    distro: CentOS_7
+

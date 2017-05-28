@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+bareos:
+  config_dir: /etc/bareos
+  default_password: default_bareos_formula_password
+
+  use_upstream_repo: true
+  # One of http://download.bareos.org/bareos/release/
+  # Repo URL is built with grains values. If desired, it can be completely
+  # overwritten with the pillar parameter 'repo_url'
+  repo:
+    url_base: 'http://download.bareos.org/bareos/release'
+    keyid: 093BFBA2
+    keyserver: keyserver.ubuntu.com
+    humanname: Bareos Official Repository
+    flavour: latest
+
+  director:
+    pkg: bareos-director
+    config:
+      name: bareos-dir
+      file: /etc/bareos
+      password: bareos
+    service: bareos-director
+  
+    manage_database: false
+    database:
+      flavour: mysql
+      host: bareos
+      user: bareos
+      password: bareos
+
+  storage:
+    pkg: bareos-storage
+    backend: none
+    config:
+      file: /etc/bareos
+      password: bareos
+    service: bareos-storage
+
+  filedaemon:
+    pkg: bareos-filedaemon
+    plugin: none
+    config_file: bareos-fd.conf
+    config:
+      resources:
+        Director:
+          bareos-dir:
+            Description: The default BareOS director resource
+          bareos-mon:
+            Description: A monitor resource
+            Monitor: yes
+        FileDaemon:
+          bareos-fd:
+            MaximumConcurrentJobs: 20
+        Messages:
+          Standard:
+            Director: 'bareos-debian-jessie64-dir = all, !skipped, !restored'
+
+    service: bareos-fd
+
+  client:
+    pkg: bareos-client
+    config_file: /etc/bareos
+
+  traymonitor:
+    pkg: bareos-traymonitor
+    config:
+      name: bareos-traymonitor
+      file: /etc/bareos
+      password: bareos-traymonitor
+  
+  console:
+    pkg: bareos-console

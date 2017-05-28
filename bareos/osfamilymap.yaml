@@ -1,0 +1,9 @@
+Debian:
+  repo:
+    file: /etc/apt/sources.list.d/bareos.list
+RedHat:
+  repo:
+    file: /etc/yum.repos.d/bareos.repo
+Ubuntu:
+  repo:
+    file: /etc/apt/sources.list.d/bareos.list

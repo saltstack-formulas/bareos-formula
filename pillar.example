@@ -1,0 +1,26 @@
+bareos:
+  lookup:
+    master: bareos-master
+
+  filedaemon:
+    config:
+      resources:
+        '@':
+          - 'somestrig'
+          - '/etc/bareos/extra/*.conf'
+          - '|"/etc/bareos/extra/*.conf"'
+          - '|"sh -c /etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com"'
+        Director:
+          res_1:
+            box: eos
+            bis: block
+          res_2:
+            PaSsWoRd: esta_es_otra
+            otro: bla
+        Storage:
+          res_2:
+            Password: no_deberia_pasar
+            test1: 1
+            test2: 2
+            test3: satasa
+
