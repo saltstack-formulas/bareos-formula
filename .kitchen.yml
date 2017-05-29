@@ -29,3 +29,5 @@ suites:
         base:
           '*':
             - bareos.filedaemon
+            - bareos.storage
+            - bareos.director

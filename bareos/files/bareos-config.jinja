@@ -13,7 +13,15 @@
     Password = "{{ default_password }}"
                 {%- endif %}
                 {%- for k, v in params.iteritems() %}
+                    {#- WilDir, FSType, run and others can be expressed multiple times,
+                       so we use arrays for them #}
+                    {%- if v is not string and v is iterable %}
+                        {%- for value in v %}
+    {{ k }} = "{{ value }}"
+                        {%- endfor %}
+                    {% else %}
     {{ k }} = "{{ v }}"
+                    {%- endif %}
                 {%- endfor %}
 }
             {%- endfor %}

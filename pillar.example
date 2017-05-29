@@ -1,6 +1,8 @@
 bareos:
-  lookup:
-    master: bareos-master
+  config_dir: /etc/bareos
+    default_password: default_bareos_formula_password
+
+      use_upstream_repo: true
 
   filedaemon:
     config:
