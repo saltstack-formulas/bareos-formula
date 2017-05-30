@@ -1,29 +1,23 @@
-{%- macro _config(config) -%}
-    {%- for type, resources in config.resources.iteritems() %}
+{%- set requires_name = ['director', 'job', 'jobdefs', 'schedule', 'fileset', 'client', 'storage', 'pool', 'catalog', 'messages', 'filedaemon', 'console', 'profile', 'counter', 'device', 'ndmp', 'autochanger', 'monitor'] %}
+{%- set ind_increment = 4 %}
+{%- macro _config(config, ind=4, operator=' = ') -%}
+    {%- for n, v in config.iteritems() %}
         {#- The @ resources are a special case -#}
-        {%- if type == "@" %}
-            {%- for v in resources %}
-{{ type }}{{ v }}
+        {%- if n == "@" %}
+            {%- for include in v %}
+{{ n }}{{ include }}
             {%- endfor %}
+        {%- elif v is mapping %}
+{{ n|indent(ind, True) }} {
+{{ _config(v, ind+ind_increment) }}
+{{ '}'|indent(ind, True) }}
+        {%- elif v is number %}
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
+        {%- elif v is string  %}
+{{ n|indent(ind, True) }}{{ operator }}"{{ v }}"
         {%- else %}
-            {%- for k, params in resources.iteritems() %}
-{{ type }} {
-    Name = "{{ k }}"
-                {%- if type|lower != 'messages' and 'password' not in params|lower %}
-    Password = "{{ default_password }}"
-                {%- endif %}
-                {%- for k, v in params.iteritems() %}
-                    {#- WilDir, FSType, run and others can be expressed multiple times,
-                       so we use arrays for them #}
-                    {%- if v is not string and v is iterable %}
-                        {%- for value in v %}
-    {{ k }} = "{{ value }}"
-                        {%- endfor %}
-                    {% else %}
-    {{ k }} = "{{ v }}"
-                    {%- endif %}
-                {%- endfor %}
-}
+            {%- for value in v %}
+{{ n|indent(ind, True) }}{{ operator }}"{{ value }}"
             {%- endfor %}
         {%- endif %}
     {%- endfor %}
@@ -32,4 +26,22 @@
 # This file managed by Salt, do not edit by hand!!
 # Modify the salt pillar for bareos, instead.
 #
-{{ _config(config) }}
+{%- for type, resources in config.iteritems() %}
+    {%- if type == "@" %}
+        {%- for include in resources %}
+{{ type }}{{ include }}
+        {%- endfor %}
+    {% else %}
+        {%- for name, config in resources.iteritems() %}
+{{ type }} {
+            {% if type|lower in requires_name %}
+    Name = "{{ name }}"
+            {%- endif %}
+             {%- if type|lower in requires_password and 'password' not in config|lower %}
+    Password = "{{ default_password }}"
+             {%- endif %}
+    {{ _config(config) }}
+}
+        {%- endfor %}
+    {%- endif %}
+{%- endfor %}

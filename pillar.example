@@ -1,28 +1,579 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+
+# The configuration for each BareOS daemon (director, storage, filedaemon) is
+# generated from pillar data if a key `config` exist for such daemon, ie:
+# 
+# bareos:
+# 
+#   director:
+#     ...
+#     config:
+#       ...
+#       ...
+#
+# If no `config` section is given, no configuration will be perfomed, and the
+# existing configuration will be used (or the one provided by the package).
+#
+# The config sections are ordered by resource type, like in the following example.
+# 
+# Keys that can be repeated multiple times (like 'run', in Schedules) should be
+# written as lists, and they will be expanded accordingly.
+# 
+# Resources that require 'Password', will use the provided password in each `config`
+# section, or will use the password set in 'bareos:default_password'. If none is
+# specified, this formula will use "default_bareos_formula_password" as the default
+# password).
+#
+# The include file '@' parameter is an 'special case' of the resource_type, and should
+# be written as a list instead of a dict, as shown below.
+#
+# 
+# bareos:
+#   daemon:
+#     config:   
+#       resource_type1:
+#         resource1_name:
+#           param1: value1
+#           param2: 2
+#           param3:
+#             sub_param3a:
+#               param3b: value3b
+#               param3c: true
+#               param3d:
+#                 - value3d_1
+#                 - value3d_2
+#                 - value3d_3
+#               param3e: value_3e
+#             sub_param3b: 3
+#         resource2_name:
+#           param1: value1
+# 
+#       resource_type2:
+#         resource3_name:
+#           param2: value2
+# 
+#       '@':
+#         - 'include_file1'
+#         - '|"/etc/bareos/generate_configuration_to_stdout.sh"'
+#         - '|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""'
+# 
+# will create the following config file:
+# 
+# resource_type1 {
+#             
+#     Name = "resource1_name"
+# 
+#     param1 = "value1"
+#     param2 = 2
+#     param3 {
+# 
+#         sub_param3a {
+# 
+#             param3b = "value3b"
+#             param3c = True
+#             param3d = "value3d_1"
+#             param3d = "value3d_2"
+#             param3d = "value3d_3"
+#             param3e = "value_3e"
+#         }
+#         sub_param3b = 3
+#     }
+# }
+# 
+# resource_type1 {
+#             
+#     Name = "resource2_name"
+# 
+#     param1 = "value1"
+# 
+# }
+# 
+# resource_type2 {
+#             
+#     Name = "resource3_name"
+# 
+#     param2 = "value2"
+# 
+# }
+# 
+# @include_file1
+# @|"/etc/bareos/generate_configuration_to_stdout.sh"
+# @|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""
+
+
+############### FULL EXAMPLE (not necessarily a working one) ###################
+# The following configuration example is a full example matching what is
+# configured, by default, when you install the packages bareos-director,
+# bareos-storage and bareos-client from the upstream repository.
+
 bareos:
   config_dir: /etc/bareos
-    default_password: default_bareos_formula_password
+  default_password: default_bareos_formula_password
 
-      use_upstream_repo: true
+  use_upstream_repo: true
+  # One of http://download.bareos.org/bareos/release/
+  # Repo URL is built with grains values. If desired, it can be completely
+  # overwritten with the pillar parameter 'repo_url'
+  repo:
+    url_base: 'http://download.bareos.org/bareos/release'
+    keyid: 093BFBA2
+    keyserver: keyserver.ubuntu.com
+    humanname: Bareos Official Repository
+    flavour: latest
+
+  director:
+    pkg: bareos-director
+    config_file: bareos-dir.conf
+    config:
+      Director:
+        bareos-dir:
+          Messages: Daemon
+          QueryFile: /usr/lib/bareos/scripts/query.sql
+          MaximumConcurrentJobs: 10
+          NdmpSfalseoping: false
+          AbsoluteJobTimeout: 0
+          Auditing: true
+
+      Client:
+        bareos-fd:
+          Description: Client resource of the Director itself.
+          Catalog: MyCatalog
+          MaximumBandwidthPerJob: 0
+
+      JobDefs:
+        DefaultJob:
+          Type: Backup
+          Level: Incremental
+          Messages: Standard
+          Storage: File
+          Pool: Incremental
+          FullBackupPool: Full
+          IncrementalBackupPool: Incremental
+          DifferentialBackupPool: Differential
+          Client: bareos-fd
+          FileSet: SelfTest
+          Schedule: WeeklyCycle
+          WriteBootstrap: '/var/lib/bareos/%c.bsr'
+          MaximumBandwidth: 0
+          MaxRunSchedTime: 0
+          MaxRunTime: 0
+          FullMaxWaitTime: 0
+          IncrementalMaxWaitTime: 0
+          DifferentialMaxWaitTime: 0
+          FullMaxRuntime: 0
+          IncrementalMaxRuntime: 0
+          DifferentialMaxRuntime: 0
+          MaxWaitTime: 0
+          MaxStartDelay: 0
+          MaxFullInterval: 0
+          MaxVirtualFullInterval: 0
+          MaxDiffInterval: 0
+          SpoolSize: 0
+          Priority: 10
+          WritePartAfterJob: false
+          AlwaysIncrementalMaxFullAge: 0
+
+      Job:
+        RestoreFiles:
+          Description: Standard Restore template. Only one such job is needed for all standard Jobs/Clients/Storage ...
+          Type: Restore
+          Messages: Standard
+          Storage: File
+          Pool: Incremental
+          Client: bareos-fd
+          FileSet: LinuxAll
+          Where: /tmp/bareos-restores
+          MaximumBandwidth: 0
+          MaxRunSchedTime: 0
+          MaxRunTime: 0
+          FullMaxWaitTime: 0
+          IncrementalMaxWaitTime: 0
+          DifferentialMaxWaitTime: 0
+          FullMaxRuntime: 0
+          IncrementalMaxRuntime: 0
+          DifferentialMaxRuntime: 0
+          MaxWaitTime: 0
+          MaxStartDelay: 0
+          MaxFullInterval: 0
+          MaxVirtualFullInterval: 0
+          MaxDiffInterval: 0
+          SpoolSize: 0
+          WritePartAfterJob: false
+          AlwaysIncrementalMaxFullAge: 0
+
+        BackupCatalog:
+          Description: Backup the catalog database (after the nightly save)
+          Level: Full
+          FileSet: Catalog
+          Schedule: WeeklyCycleAfterBackup
+          JobDefs: DefaultJob
+          WriteBootstrap: '|/usr/bin/bsmtp -h localhost -f "(Bareos) " -s "Bootstrap for Job %j" root@localhost'
+          MaximumBandwidth: 0
+          MaxRunSchedTime: 0
+          MaxRunTime: 0
+          FullMaxWaitTime: 0
+          IncrementalMaxWaitTime: 0
+          DifferentialMaxWaitTime: 0
+          FullMaxRuntime: 0
+          IncrementalMaxRuntime: 0
+          DifferentialMaxRuntime: 0
+          MaxWaitTime: 0
+          MaxStartDelay: 0
+          MaxFullInterval: 0
+          MaxVirtualFullInterval: 0
+          MaxDiffInterval: 0
+          SpoolSize: 0
+          Priority: 11
+          WritePartAfterJob: false
+          RunBeforeJob: '/usr/lib/bareos/scripts/make_catalog_backup.pl MyCatalog'
+          RunAfterJob: '/usr/lib/bareos/scripts/delete_catalog_backup'
+          AlwaysIncrementalMaxFullAge: 0
+
+        backup-bareos-fd:
+          Client: bareos-fd
+          JobDefs: DefaultJob
+          MaximumBandwidth: 0
+          MaxRunSchedTime: 0
+          MaxRunTime: 0
+          FullMaxWaitTime: 0
+          IncrementalMaxWaitTime: 0
+          DifferentialMaxWaitTime: 0
+          FullMaxRuntime: 0
+          IncrementalMaxRuntime: 0
+          DifferentialMaxRuntime: 0
+          MaxWaitTime: 0
+          MaxStartDelay: 0
+          MaxFullInterval: 0
+          MaxVirtualFullInterval: 0
+          MaxDiffInterval: 0
+          SpoolSize: 0
+          WritePartAfterJob: false
+          AlwaysIncrementalMaxFullAge: 0
+
+      Storage:
+        File:
+          Address: bareos-debian-jessie64
+          Password: '[md5]abfc1f5292616091194dd851bee2aaf7'
+          Device: FileStorage
+          MediaType: File
+          SddPort: 0
+          MaximumBandwidthPerJob: 0
+
+      Catalog:
+        MyCatalog:
+          DbPort: 0
+          DbUser: bareos
+          DbName: bareos
+          DbDriver: postgresql
+          MultipleConnections: false
+
+      Schedule:
+        WeeklyCycle:
+          run:
+            - 'Full 1st Sat at 21:00'
+            - 'Differential 2nd-5th Sat at 21:00'
+            - 'Incremental Mon-Fri at 21:00'
+
+        WeeklyCycleAfterBackup:
+          Description: This schedule does the catalog. It starts after the WeeklyCycle.
+          run:
+            - 'Full Mon-Fri at 21:10'
+
+      FileSet:
+        "Windows All Drives":
+          Include:
+            Options:
+              Signature: MD5
+              IgfalsereCase: Yes
+              Exclude: Yes
+              WildDir:
+                - '[A-Z]:/RECYCLER'
+                - '[A-Z]:/$RECYCLE.BIN'
+                - '[A-Z]:/System Volume Information'
+              WildFile: '[A-Z]:/pagefile.sys'
+              DriveType: fixed
+
+            File: /
+
+        SelfTest:
+          Include:
+            Options:
+              Signature: MD5
+
+            File: /usr/sbin
+
+
+        LinuxAll:
+          Include:
+            Options:
+              Signature: MD5
+              OneFS: No
+              FsType:
+                - btrfs
+                - ext2
+                - ext3
+                - ext4
+                - reiserfs
+                - jfs
+                - xfs
+                - zfs
+
+            File: /
+
+          Exclude:
+            File:
+              - /var/lib/bareos
+              - /var/lib/bareos/storage
+              - /proc
+              - /tmp
+              - /var/tmp
+              - /.journal
+              - /.fsck
+
+        Catalog:
+          Include:
+            Options:
+              Signature: MD5
+
+            File:
+              - /var/lib/bareos/bareos.sql
+              - /etc/bareos
+
+      Pool:
+        Scratch:
+          PoolType: Scratch
+          LabelType: bareos
+          UseVolumeOnce: false
+          MaximumVolumes: 0
+          MaximumVolumeJobs: 0
+          MaximumVolumeFiles: 0
+          MaximumVolumeBytes: 0
+          VolumeUseDuration: 0
+          MigrationTime: 0
+          MigrationHighBytes: 0
+          MigrationLowBytes: 0
+          FileRetention: 0
+          JobRetention: 0
+          MinimumBlockSize: 0
+          MaximumBlockSize: 0
+
+        Incremental:
+          PoolType: Backup
+          LabelFormat: Incremental-
+          LabelType: bareos
+          UseVolumeOnce: false
+          MaximumVolumes: 100
+          MaximumVolumeJobs: 0
+          MaximumVolumeFiles: 0
+          MaximumVolumeBytes: 1 g 
+          VolumeRetention: 1 months 
+          VolumeUseDuration: 0
+          MigrationTime: 0
+          MigrationHighBytes: 0
+          MigrationLowBytes: 0
+          AutoPrune: true
+          Recycle: true
+          FileRetention: 0
+          JobRetention: 0
+          MinimumBlockSize: 0
+          MaximumBlockSize: 0
+
+        Full:
+          PoolType: Backup
+          LabelFormat: Full-
+          LabelType: bareos
+          UseVolumeOnce: false
+          MaximumVolumes: 100
+          MaximumVolumeJobs: 0
+          MaximumVolumeFiles: 0
+          MaximumVolumeBytes: 50 g 
+          VolumeRetention: 1 years 
+          VolumeUseDuration: 0
+          MigrationTime: 0
+          MigrationHighBytes: 0
+          MigrationLowBytes: 0
+          AutoPrune: true
+          Recycle: true
+          FileRetention: 0
+          JobRetention: 0
+          MinimumBlockSize: 0
+          MaximumBlockSize: 0
+
+        Differential:
+          PoolType: Backup
+          LabelFormat: Differential-
+          LabelType: bareos
+          UseVolumeOnce: false
+          MaximumVolumes: 100
+          MaximumVolumeJobs: 0
+          MaximumVolumeFiles: 0
+          MaximumVolumeBytes: 10 g 
+          VolumeRetention: 3 months 
+          VolumeUseDuration: 0
+          MigrationTime: 0
+          MigrationHighBytes: 0
+          MigrationLowBytes: 0
+          AutoPrune: true
+          Recycle: true
+          FileRetention: 0
+          JobRetention: 0
+          MinimumBlockSize: 0
+          MaximumBlockSize: 0
+
+      Messages:
+        Standard:
+          MailCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos: %t %e of %c %l\" %r'
+          OperatorCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos: Intervention needed for %j\" %r'
+          catalog: 'all,!saved,!skipped,!audit'
+          append: '/var/log/bareos/bareos.log: all,!saved,!skipped,!audit'
+          console: 'all,!saved,!skipped,!audit'
+          mail: 'root@localhost: all,!saved,!skipped,!audit'
+          operator: 'root@localhost: mount'
+
+        Daemon:
+          MailCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos daemon message\" %r'
+          append:
+            - '/var/log/bareos/bareos-audit.log: audit'
+            - '/var/log/bareos/bareos.log: all,!skipped,!audit'
+          console: 'all,!saved,!skipped,!audit'
+          mail: 'root@localhost: all,!skipped,!audit'
+
+      Profile:
+        operator:
+          Description: Profile allowing falsermal Bareos operations.
+          JobACL: '*all*'
+          ClientACL: '*all*'
+          StorageACL: '*all*'
+          ScheduleACL: '*all*'
+          PoolACL: '*all*'
+          CommandACL: '"!.bvfs_clear_cache","!.exit","!.sql","!configure","!create","!delete","!purge","!sqlquery","!umount","!unmount","*all*"'
+          FileSetACL: '*all*'
+          CatalogACL: '*all*'
+          WhereACL: '*all*'
+          PluginOptionsACL: '*all*'
+
+      Console:
+        bareos-mon:
+          Description: Restricted console used by tray-monitor to get the status of the director.
+          Password: '[md5]52cac8957be7f13d8d37c222a0768872'
+          JobACL: '*all*'
+          CommandACL: '"status",".status"'
+
+    service: bareos-director
+  
+  storage:
+    pkg: bareos-storage
+    backend: falsene
+    config_file: bareos-sd.conf
+    config:
+      Director:
+        bareos-mon:
+          Description: Restricted Director, used by tray-monitor to get the status of this storage daemon.
+          Password: '[md5]95983592338a5acbf125e956b2d7725c'
+          Monitor: true
+          MaximumBandwidthPerJob: 0
+
+        bareos-dir:
+          Description: Director, who is permitted to contact this storage daemon.
+          Password: '[md5]abfc1f5292616091194dd851bee2aaf7'
+          Monitor: false
+          MaximumBandwidthPerJob: 0
+
+      Storage:
+        bareos-sd:
+          MaximumConcurrentJobs: 20
+          MaximumNetworkBufferSize: 0
+          MaximumBandwidthPerJob: 0
+          AbsoluteJobTimeout: 0
+
+      Device:
+        FileStorage:
+          Description: File device. A connecting Director must have the same Name and MediaType.
+          MediaType: File
+          ArchiveDevice: /var/lib/bareos/storage
+          RemovableMedia: false
+          RandomAccess: true
+          AutomaticMount: true
+          LabelMedia: true
+          AlwaysOpen: false
+          MaximumNetworkBufferSize: 0
+          MinimumBlockSize: 0
+          MaximumVolumeSize: 0
+          VolumeCapacity: 0
+          MaximumConcurrentJobs: 0
+          MaximumSpoolSize: 0
+          MaximumJobSpoolSize: 0
+          DriveIndex: 0
+          MaximumPartSize: 0
+          LabelType: bareos
+          DriveTapeAlertEnabled: false
+          DriveCryptoEnabled: false
+          QueryCryptoStatus: false
+
+      Messages:
+        Standard:
+          director: 'bareos-dir: all'
+
+    service: bareos-storage
 
   filedaemon:
+    pkg: bareos-filedaemon
+    plugin: falsene
+    config_file: bareos-fd.conf
     config:
-      resources:
-        '@':
-          - 'somestrig'
-          - '/etc/bareos/extra/*.conf'
-          - '|"/etc/bareos/extra/*.conf"'
-          - '|"sh -c /etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com"'
-        Director:
-          res_1:
-            box: eos
-            bis: block
-          res_2:
-            PaSsWoRd: esta_es_otra
-            otro: bla
-        Storage:
-          res_2:
-            Password: no_deberia_pasar
-            test1: 1
-            test2: 2
-            test3: satasa
+      Director:
+        bareos-dir:
+          Description: The default BareOS director resource
+        bareos-mon:
+          Description: A monitor resource
+          Monitor: true
+      Client:
+        bareos-fd:
+          MaximumConcurrentJobs: 20
+      Messages:
+        Standard:
+          Director: 'bareos-debian-jessie64-dir = all, !skipped, !restored'
+
+    service: bareos-fd
+
+  client:
+    pkg: bareos-client
+
+  traymonitor:
+    pkg: bareos-traymonitor
+    config_file: tray-monitor.conf
+    config:
+      Monitor:
+        bareos-debian-jessie64-mon:
+          Password: "[md5]52cac8957be7f13d8d37c222a0768872"
+          RefreshInterval: 30 seconds 
+
+      Director:
+        bareos-debian-jessie64-dir:
+          DirPort: 9101
+          Address: "bareos-debian-jessie64"
+
+      Client:
+        bareos-debian-jessie64-fd:
+          Address: "bareos-debian-jessie64"
+          FdPort: 9102
+          Password: "[md5]6a8fc2ca1763e0bdb7dadd8a84c03312"
+
+      Storage:
+        bareos-debian-jessie64-sd:
+          SdPort: 9103
+          Address: "bareos-debian-jessie64"
+          SdAddress: "bareos-debian-jessie64"
+          Password: "[md5]95983592338a5acbf125e956b2d7725c"
+          SdPassword: "[md5]95983592338a5acbf125e956b2d7725c"
+  
+  console:
+    pkg: bareos-console
+    config:
+      Director:
+        bareos-debian-jessie64-dir:
+          DirPort: 9101
+          Address: bareos-debian-jessie64
+          Password: "[md5]ff0f8e427999d2b25c1bd81e98590ed9"
 

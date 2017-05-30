@@ -1,163 +1,81 @@
-*.swp
-.kitchen
-.kitchen.local.yml
-*.swp
-.kitchen
-*.swp
-.kitchen
-.kitchen.local.yml
-*.swp
-.kitchen
-.kitchen.local.yml
-.kitchen/
-.ruby-version
-junit*.xml
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
-*.swp
-pkg/
-metadata.json
-*.idea
-*.swp
-*.tmp
-/.project
-.kitchen/
-.kitchen.local.yml
-.kitchen
-vendor
-.kitchen
-.orig
-.bak
-.kitchen
-tests/build/
-*.swp
-*.pyc
-.ropeproject
-*.pyc
-*~
-Gemfile.lock
-.kitchen/
-.*.sw?
-/.idea/
-*.swp
-.kitchen/
-.kitchen.local.yml
-.kitchen/
-*.swp
-*.swo
-.vagrant/
-.idea/
-top.sls
-/build
-/src
-*.py[co]
-pkg/arch/*.tar.xz
-*.sw[pon]
-doc/_build
-dist
-MANIFEST
 *~
 *#
-*.wpr
-*.wpu
-*.DS_Store
-
-# virtualenv
-# - ignores directories of a virtualenv when you create it right on
-#   top of salt such as
-# - /some/path$ git clone https://github.com/thatch45/salt.git
-# - /some/path$ virtualenv --python=/usr/bin/python2.6 salt
+.bak
 /bin/
+build
+/build
+.cache
+*,cover
+.coverage
+.coverage.*
+coverage.xml
+dist
+doc/_build
+.doctrees
+*.DS_Store
+*.egg-info
 /etc/
+*_flymake.py
+Gemfile.lock
+htmlcov/
+.hypothesis/
+.idea
+*.idea
+*.iml
 /include/
+junit*.xml
+.kitchen
+.kitchen.local.yml
 /lib/
 /lib64/
 /local/
+/logs
+MANIFEST
+metadata.json
+*.mo
+nosetests.xml
+.orig
 /pip/
-/share/
-/tests/integration/tmp/
-/tests/cachedir/
-/tests/unit/templates/roots/
-/var/
-
-# setuptools stuff
-*.egg-info
-
-# code coverage outputs genereated by coverage.py
-.coverage
-coverage.xml
-htmlcov/
-
-# IDE files
-/.settings
+pkg/
 /.project
+*.pyc
+__pycache__/
+*$py.class
+*.py[co]
+*.py[cod]
 /.pydevproject
-/.idea
+/root/**
 /.ropeproject
 .ropeproject
-*_flymake.py
-/*.iml
+.ruby-version
+/salt/_syspaths.py
+/.settings
+/share/
+/src
 *.sublime-project
 *.sublime-workspace
-
-# ignore ctags file
-tags
-
-# ignore Vagrant file
-**/Vagrantfile
-**/.vagrant
-
-# Compiled translation files should not be VCS'ed
-# locale/zh_CN/LC_MESSAGES/topics/virt/nic.mo
-*.mo
-.doctrees
-
-# Allow a user to set their own _version.py for testing
-_version.py
-
-# Ignore auto generated _syspaths.py file
+.*.sw?
+*.swo
+*.swp
 _syspaths.py
-
-# Ignore grains file written out during tests
-tests/integration/files/conf/grains
-/salt/_syspaths.py
-
-# ignore the local root
-/root/**
-
-# Ignore file cache created by jinja tests
-tests/unit/templates/roots
-
-# Pycharm
-.idea
-
-# Ignore the log directory created by tests
-/logs
+tags
+tests/build/
+/tests/cachedir/
 tests/integration/cloud/providers/logs
-
-# Private keys from the integration tests
 tests/integration/cloud/providers/pki/minions
-/.idea/
-.idea
-
-*.swp
-*.swp
-.kitchen
-build
-dist
+tests/integration/files/conf/grains
+/tests/integration/tmp/
+/tests/unit/templates/roots/
+tests/unit/templates/roots
+*.tmp
+top.sls
+.tox/
+.vagrant/
+**/.vagrant
+**/Vagrantfile
+/var/
 varstack.egg-info
-*.pyc
+vendor
+_version.py
+*.wpr
+*.wpu
