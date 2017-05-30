@@ -13,7 +13,7 @@ bareos:
     keyid: 093BFBA2
     keyserver: keyserver.ubuntu.com
     humanname: Bareos Official Repository
-    flavour: latest
+    version: latest
 
   director:
     pkg: bareos-director
