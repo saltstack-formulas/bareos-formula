@@ -3,6 +3,7 @@
 {% from "bareos/map.jinja" import bareos with context %}
 {% set dir_config = bareos.director.config if bareos.director.config is defined else {} %}
 {% set require_password = ['client', 'console', 'director', 'storage'] %}
+{% set pkgs = [bareos.director.pkg] + bareos.director.plugins %}
 
 {% if bareos.use_upstream_repo %}
 include:
@@ -11,7 +12,7 @@ include:
 
 bareos_director:
   pkg.installed:
-    - name: {{ bareos.director.pkg }}
+    - pkgs: {{ pkgs }}
     {% if bareos.use_upstream_repo %}
     - require:
       - pkgrepo: bareos_repo

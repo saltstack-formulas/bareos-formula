@@ -15,27 +15,28 @@ bareos:
     humanname: Bareos Official Repository
     version: latest
 
+  manage_database: false
+  database:
+    backend: mysql
+    host: bareos
+    user: bareos
+    password: bareos
+
   director:
     pkg: bareos-director
     config_file: bareos-dir.conf
+    plugins: []
     service: bareos-dir
   
-    manage_database: false
-    database:
-      flavour: mysql
-      host: bareos
-      user: bareos
-      password: bareos
-
   storage:
     pkg: bareos-storage
-    backend: falsene
+    backends: []
     config_file: bareos-sd.conf
     service: bareos-sd
 
   filedaemon:
     pkg: bareos-filedaemon
-    plugin: falsene
+    plugins: []
     config_file: bareos-fd.conf
     service: bareos-fd
 

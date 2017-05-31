@@ -120,10 +120,11 @@ bareos:
     keyid: 093BFBA2
     keyserver: keyserver.ubuntu.com
     humanname: Bareos Official Repository
-    flavour: latest
+    version: latest
 
   director:
     pkg: bareos-director
+    plugins: []
     config_file: bareos-dir.conf
     config:
       Director:
@@ -464,7 +465,7 @@ bareos:
   
   storage:
     pkg: bareos-storage
-    backend: falsene
+    backends: []
     config_file: bareos-sd.conf
     config:
       Director:
@@ -519,7 +520,7 @@ bareos:
 
   filedaemon:
     pkg: bareos-filedaemon
-    plugin: falsene
+    plugins: []
     config_file: bareos-fd.conf
     config:
       Director:
