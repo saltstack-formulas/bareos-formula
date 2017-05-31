@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-
 {% from "bareos/map.jinja" import bareos with context %}
 {% set fd_config = bareos.filedaemon.config if bareos.filedaemon.config is defined else {} %}
-{# http://doc.bareos.org/master/html/bareos-manual-main-reference.html#QQ2-1-197 #}
-{% set required_resources = ['client', 'director', 'message'] %}
-{% set requires_password = ['director'] %}
+{% set require_password = ['director'] %}
 
 {% if bareos.use_upstream_repo %}
 include:
-  - .repo
+  - bareos.repo
 {% endif %}
 
 bareos_filedaemon:
   pkg.installed:
     - name: {{ bareos.filedaemon.pkg }}
+    {% if bareos.use_upstream_repo %}
     - require:
-      - bareos_repo
-
-  service.running:
-    - name: {{ bareos.filedaemon.service }}
-    - enable: true
+      - pkgrepo: bareos_repo
+    {% endif %}
 
 {% if fd_config != {} %}
   file.managed:
@@ -29,11 +24,20 @@ bareos_filedaemon:
     - context:
         config: {{ fd_config|json() }}
         default_password: {{ bareos.default_password }}
-        required_resources: {{ required_resources  }}
-        requires_password: {{ requires_password }}
+        require_password: {{ require_password }}
     - template: jinja
     - mode: 644
     - user: root
     - group: root
+    - require:
+      - pkg: bareos_filedaemon
+    - watch_in:
+      - service: bareos_filedaemon
 {% endif %}
+
+  service.running:
+    - name: {{ bareos.filedaemon.service }}
+    - enable: true
+    - require:
+      - pkg: bareos_filedaemon
 

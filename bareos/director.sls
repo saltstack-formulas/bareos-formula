@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-
 {% from "bareos/map.jinja" import bareos with context %}
 {% set dir_config = bareos.director.config if bareos.director.config is defined else {} %}
-{% set requires_password = ['client', 'console', 'director', 'storage'] %}
+{% set require_password = ['client', 'console', 'director', 'storage'] %}
 
 {% if bareos.use_upstream_repo %}
 include:
-  - .repo
+  - bareos.repo
 {% endif %}
 
 bareos_director:
   pkg.installed:
     - name: {{ bareos.director.pkg }}
+    {% if bareos.use_upstream_repo %}
     - require:
-      - bareos_repo
-
-  service.running:
-    - name: {{ bareos.director.service }}
-    - enable: true
+      - pkgrepo: bareos_repo
+    {% endif %}
 
 {% if dir_config != {} %}
   file.managed:
@@ -27,9 +24,19 @@ bareos_director:
     - context:
         config: {{ dir_config|json() }}
         default_password: {{ bareos.default_password }}
-        requires_password: {{ requires_password }}
+        require_password: {{ require_password }}
     - template: jinja
     - mode: 644
     - user: root
     - group: root
+    - require:
+      - pkg: bareos_director
+    - watch_in:
+      - service: bareos_director
 {% endif %}
+
+  service.running:
+    - name: {{ bareos.director.service }}
+    - enable: true
+    - require:
+      - pkg: bareos_director

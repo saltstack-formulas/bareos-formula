@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# vim: ft=sls
 {% from "bareos/map.jinja" import bareos with context -%}
 
 {% if salt['grains.get']('os_family') == 'Debian' -%}

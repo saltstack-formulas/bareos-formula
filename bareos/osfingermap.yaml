@@ -16,10 +16,6 @@ Red Hat Enterprise Linux Server-7:
 CentOS-6:
   repo:
     distro: CentOS_6
-  director:
-    service: bareos-dir
-  storage:
-    service: bareos-sd
 CentOS Linux-7:
   repo:
     distro: CentOS_7

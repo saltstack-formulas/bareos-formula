@@ -37,7 +37,7 @@
             {% if type|lower in requires_name %}
     Name = "{{ name }}"
             {%- endif %}
-             {%- if type|lower in requires_password and 'password' not in config|lower %}
+             {%- if type|lower in require_password and 'password' not in config|lower %}
     Password = "{{ default_password }}"
              {%- endif %}
     {{ _config(config) }}

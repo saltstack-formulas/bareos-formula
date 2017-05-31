@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-
 {% from "bareos/map.jinja" import bareos with context %}
 {% set sd_config = bareos.storage.config if bareos.storage.config is defined else {} %}
-{% set requires_password = ['director'] %}
+{% set require_password = ['director'] %}
 
 {% if bareos.use_upstream_repo %}
 include:
-  - .repo
+  - bareos.repo
 {% endif %}
 
 bareos_storage:
   pkg.installed:
     - name: {{ bareos.storage.pkg }}
+    {% if bareos.use_upstream_repo %}
     - require:
       - bareos_repo
-
-  service.running:
-    - name: {{ bareos.storage.service }}
-    - enable: true
+    {% endif %}
 
 {% if sd_config != {} %}
   file.managed:
@@ -27,10 +24,20 @@ bareos_storage:
     - context:
         config: {{ sd_config|json() }}
         default_password: {{ bareos.default_password }}
-        requires_password: {{ requires_password }}
+        require_password: {{ require_password }}
     - template: jinja
     - mode: 644
     - user: root
     - group: root
+    - require:
+      - pkg: bareos_storage
+    - watch_in:
+      - service: bareos_storage
 {% endif %}
+
+  service.running:
+    - name: {{ bareos.storage.service }}
+    - enable: true
+    - require:
+      - pkg: bareos_storage
 

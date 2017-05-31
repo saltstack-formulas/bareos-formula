@@ -18,7 +18,7 @@ bareos:
   director:
     pkg: bareos-director
     config_file: bareos-dir.conf
-    service: bareos-director
+    service: bareos-dir
   
     manage_database: false
     database:
@@ -31,7 +31,7 @@ bareos:
     pkg: bareos-storage
     backend: falsene
     config_file: bareos-sd.conf
-    service: bareos-storage
+    service: bareos-sd
 
   filedaemon:
     pkg: bareos-filedaemon
