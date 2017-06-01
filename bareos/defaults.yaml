@@ -15,19 +15,19 @@ bareos:
     humanname: Bareos Official Repository
     version: latest
 
-  manage_database: false
-  database:
-    backend: mysql
-    host: bareos
-    user: bareos
-    password: bareos
-
   director:
     pkg: bareos-director
     config_file: bareos-dir.conf
     plugins: []
     service: bareos-dir
-  
+    database:
+      manage: false
+      backend_pkq: bareos-database-postgresql
+      host: localhost
+      dbname: bareos
+      user: bareos
+      password: bareos
+
   storage:
     pkg: bareos-storage
     backends: []
@@ -47,6 +47,6 @@ bareos:
     pkg: bareos-traymonitor
     config_file: tray-monitor.conf
   
-  console:
-    pkg: bareos-console
+  bconsole:
+    pkg: bareos-bconsole
 

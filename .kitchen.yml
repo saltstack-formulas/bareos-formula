@@ -10,6 +10,7 @@ platforms:
 
 provisioner:
   name: salt_solo
+  log_level: debug
   salt_version: '2016.3'
   # data_path: test/shared
   is_file_root: true
@@ -21,6 +22,10 @@ provisioner:
     bareos.sls:
       bareos:
         use_upstream_repo: true
+        director:
+          database:
+            manage: true
+            backend_pkq: bareos-database-mysql
 
 suites:
   - name: bareos
@@ -28,6 +33,5 @@ suites:
       state_top:
         base:
           '*':
-            - bareos.filedaemon
-            - bareos.storage
-            - bareos.director
+            - test/prerequisites
+            - bareos
