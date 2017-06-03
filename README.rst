@@ -91,14 +91,16 @@ config files or config directories/subdirectories.
 
 The formula, to ease management, follows this logic:
 
-1. If no pillar key named `config` exists for a given daemon, it will be intalled
+1. By default, the formula will setup and use the upstream BareOS repo.
+
+2. If no pillar key named `config` exists for a given daemon, it will be intalled
    and the default configuration included in the package (or a custom configuration
    set by any other mean) will be used. No configuration will be attempted.
 
    This means the current `subdirectories` configuration schema provided by the
    package will be used (see `Configuration Layout <http://doc.bareos.org/master/html/bareos-manual-main-reference.html#QQ2-1-150>`_.
 
-2. If a pillar key named `config` is present for a given daemon, it will be
+3. If a pillar key named `config` is present for a given daemon, it will be
    installed and configured. This formula will use the "old approach" of setting
    all the configuration for the daemon in a single file, ignoring the rest of the
    included subdirectories. This may seem counter-intuitive at first, because
@@ -107,13 +109,11 @@ The formula, to ease management, follows this logic:
    will be regenerated and you won't need to remove lingering files, or keep
    pillar keys with 'remove/delete/disable' values.
 
-3. By default, the formula will setup and use the upstream BareOS repo.
-
+   The configuration for each BareOS daemon (director, storage, filedaemon) is
+   generated from pillar data if a key `config` exist for such daemon, ie:
+    
 .. code:: yaml
 
-    The configuration for each BareOS daemon (director, storage, filedaemon) is
-    generated from pillar data if a key `config` exist for such daemon, ie:
-    
     bareos:
     
       director:
@@ -121,23 +121,30 @@ The formula, to ease management, follows this logic:
         config:
           ...
           ...
-    #
-    If no `config` section is given, no configuration will be perfomed, and the
-    existing configuration will be used (or the one provided by the package).
-    #
-    The config sections are ordered by resource type, like in the following example.
+
+
+   If no `config` section is given, no configuration will be perfomed, and the
+   existing configuration will be used (or the one provided by the package).
+
+   The `config` sections are ordered by resource type, like in the following example.
+
+   Keys names are case insensitive.
     
-    Keys that can be repeated multiple times (like 'run', in Schedules) should be
-    written as lists, and they will be expanded accordingly.
-    
-    Resources that require 'Password', will use the provided password in each `config`
-    section, or will use the password set in 'bareos:default_password'. If none is
-    specified, this formula will use "default_bareos_formula_password" as the default
-    password).
-    #
-    The include file '@' parameter is an 'special case' of the resource_type, and should
-    be written as a list instead of a dict, as shown below.
-    #
+   Keys that can be repeated multiple times (like `run`, in Schedules) should be
+   written as lists, and they will be expanded accordingly.
+
+   Resources that require a `Name` will use the provided one, or the dict name if no
+   `Name` is provided.
+
+   Resources that require `Password`, will use the provided password in each `config`
+   section, or will use the password set in 'bareos:default_password'. If none is
+   specified, this formula will use "default_bareos_formula_password" as the default
+   password).
+
+   The include file `@` parameter is an 'special case' of the resource_type, and should
+   be written as a list instead of a dict, as shown below.
+
+.. code:: yaml
     
     bareos:
       daemon:
@@ -157,6 +164,7 @@ The formula, to ease management, follows this logic:
                   param3e: value_3e
                 sub_param3b: 3
             resource2_name:
+              name: someothername
               param1: value1
     
           resource_type2:
@@ -168,8 +176,10 @@ The formula, to ease management, follows this logic:
             - '|"/etc/bareos/generate_configuration_to_stdout.sh"'
             - '|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""'
     
-    will create the following config file:
+   will create the following config file:
     
+.. code:: yaml
+
     resource_type1 {
                 
         Name = "resource1_name"
@@ -193,7 +203,7 @@ The formula, to ease management, follows this logic:
     
     resource_type1 {
                 
-        Name = "resource2_name"
+        Name = "someothername"
     
         param1 = "value1"
     
@@ -212,12 +222,12 @@ The formula, to ease management, follows this logic:
     @|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""
 
 
-See *bind/pillar.example* for a full example.
+   See *bind/pillar.example* for a full example.
 
 Contributions
 =============
 
-Contributions are always welcome. All development guidelines you have to know are
+Contributions are always welcome. All development guidelines you have to know are:
 
 * write clean code (proper YAML+Jinja syntax, no trailing whitespaces, no empty lines with whitespaces, LF only)
 * set sane default settings

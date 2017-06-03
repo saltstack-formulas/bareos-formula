@@ -26,6 +26,11 @@ provisioner:
           database:
             manage: true
             backend_pkq: bareos-database-mysql
+        filedaemon:
+          config:
+            Client:
+              bareos-fd:
+                Name: somethingelse
 
 suites:
   - name: bareos
