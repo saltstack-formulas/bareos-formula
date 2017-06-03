@@ -14,10 +14,10 @@
         {%- elif v is number %}
 {{ n|indent(ind, True) }}{{ operator }}{{ v }}
         {%- elif v is string  %}
-{{ n|indent(ind, True) }}{{ operator }}"{{ v }}"
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
         {%- else %}
             {%- for value in v %}
-{{ n|indent(ind, True) }}{{ operator }}"{{ value }}"
+{{ n|indent(ind, True) }}{{ operator }}{{ value }}
             {%- endfor %}
         {%- endif %}
     {%- endfor %}
