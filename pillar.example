@@ -326,18 +326,18 @@ bareos:
           MailCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos: %t %e of %c %l\" %r'
           OperatorCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos: Intervention needed for %j\" %r'
           catalog: 'all,!saved,!skipped,!audit'
-          append: '/var/log/bareos/bareos.log: all,!saved,!skipped,!audit'
+          append: '/var/log/bareos/bareos.log = all,!saved,!skipped,!audit'
           console: 'all,!saved,!skipped,!audit'
-          mail: 'root@localhost: all,!saved,!skipped,!audit'
-          operator: 'root@localhost: mount'
+          mail: 'root@localhost = all,!saved,!skipped,!audit'
+          operator: 'root@localhost = mount'
 
         Daemon:
           MailCommand: '/usr/bin/bsmtp -h localhost -f \"\(Bareos\) \<%r\>\" -s \"Bareos daemon message\" %r'
           append:
-            - '/var/log/bareos/bareos-audit.log: audit'
-            - '/var/log/bareos/bareos.log: all,!skipped,!audit'
+            - '/var/log/bareos/bareos-audit.log = audit'
+            - '/var/log/bareos/bareos.log = all,!skipped,!audit'
           console: 'all,!saved,!skipped,!audit'
-          mail: 'root@localhost: all,!skipped,!audit'
+          mail: 'root@localhost = all,!skipped,!audit'
 
       Profile:
         operator:
@@ -413,7 +413,7 @@ bareos:
 
       Messages:
         Standard:
-          director: 'bareos-dir: all'
+          director: bareos-dir = all
 
     service: bareos-storage
 
@@ -433,7 +433,7 @@ bareos:
           MaximumConcurrentJobs: 20
       Messages:
         Standard:
-          Director: 'bareos-debian-jessie64-dir = all, !skipped, !restored'
+          Director: bareos-debian-jessie64-dir = all, !skipped, !restored
 
     service: bareos-fd
 
