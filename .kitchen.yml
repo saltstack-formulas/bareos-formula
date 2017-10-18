@@ -1,19 +1,21 @@
 ---
 driver:
   name: vagrant
+  cachier: true
+  cpus: 2
 
 platforms:
-  - name: debian/jessie64
-  - name: ubuntu/xenial64
-  - name: centos/7
-  - name: centos/6
+  - name: bento/debian-8
+  - name: bento/ubuntu-16.04
+  - name: bento/centos-6
+  - name: bento/centos-7
 
 provisioner:
   name: salt_solo
-  log_level: debug
-  salt_version: '2016.3'
-  # data_path: test/shared
-  is_file_root: true
+  log_level: info
+  require_chef: false
+  salt_version: latest
+  formula: bareos
   pillars:
     top.sls:
       base:
@@ -25,18 +27,47 @@ provisioner:
         director:
           database:
             manage: true
-            backend_pkq: bareos-database-mysql
-        filedaemon:
-          config:
-            Client:
-              bareos-fd:
-                Name: somethingelse
+
+verifier:
+  name: inspec
+  sudo: true
 
 suites:
-  - name: bareos
+  - name: bareos-postgresql
     provisioner:
+      dependencies:
+        - name: postgres
+          repo: git
+          source: https://github.com/saltstack-formulas/postgres-formula.git
+      pillars:
+        bareos.sls:
+          bareos:
+            director:
+              database:
+                backend: postgresql
       state_top:
         base:
           '*':
-            - test/prerequisites
+            - postgres
+            - bareos
+
+  - name: bareos-mysql
+    provisioner:
+      dependencies:
+        - name: mysql
+          repo: git
+          source: https://github.com/saltstack-formulas/mysql-formula.git
+      pillars:
+        bareos.sls:
+          mysql:
+            server:
+              root_password: ''
+          bareos:
+            director:
+              database:
+                backend: mysql
+      state_top:
+        base:
+          '*':
+            - mysql
             - bareos
