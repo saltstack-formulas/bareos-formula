@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 bareos:
+  version: 16.2.4-12.1
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
 
@@ -22,7 +23,7 @@ bareos:
     service: bareos-dir
     database:
       manage: false
-      backend_pkq: bareos-database-postgresql
+      backend: postgresql
       host: localhost
       dbname: bareos
       user: bareos
@@ -46,7 +47,6 @@ bareos:
   traymonitor:
     pkg: bareos-traymonitor
     config_file: tray-monitor.conf
-  
+
   bconsole:
     pkg: bareos-bconsole
-
