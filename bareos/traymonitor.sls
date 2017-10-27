@@ -3,22 +3,23 @@
 {% from "bareos/map.jinja" import bareos with context %}
 {% set tm_config = bareos.traymonitor.config if bareos.traymonitor.config is defined else {} %}
 {% set require_password = ['director'] %}
-{% set pkgs = [bareos.traymonitor.pkg] %}
 
 {% if bareos.use_upstream_repo %}
 include:
   - bareos.repo
 {% endif %}
 
-bareos_traymonitor:
+install_trymon_package:
   pkg.installed:
-    - pkgs: {{ pkgs }}
+    - name: {{ bareos.traymonitor.pkg }}
+    - version: {{ bareos.version }}
     {% if bareos.use_upstream_repo %}
     - require:
       - pkgrepo: bareos_repo
     {% endif %}
 
 {% if tm_config != {} %}
+bareos_trymon_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
@@ -31,5 +32,5 @@ bareos_traymonitor:
     - user: root
     - group: root
     - require:
-      - pkg: bareos_traymonitor
+      - pkg: bareos-traymonitor
 {% endif %}
