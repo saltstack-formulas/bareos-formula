@@ -32,5 +32,5 @@ bareos_bconsole_cfg_file:
     - user: root
     - group: root
     - require:
-      - pkg: bareos-bconsole
+      - pkg: install_bconsole_package
 {% endif %}

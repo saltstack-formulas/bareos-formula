@@ -40,7 +40,7 @@ bareos_fd_cfg_file:
     - user: root
     - group: root
     - require:
-      - pkg: bareos-filedaemon
+      - pkg: install_fd_package
     - watch_in:
       - service: bareos_fd_service
 {% endif %}
@@ -50,4 +50,4 @@ bareos_fd_service:
     - name: {{ bareos.filedaemon.service }}
     - enable: true
     - require:
-      - pkg: bareos-filedaemon
+      - pkg: install_fd_package

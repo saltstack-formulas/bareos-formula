@@ -9,7 +9,7 @@ include:
   - bareos.repo
 {% endif %}
 
-install_trymon_package:
+install_traymon_package:
   pkg.installed:
     - name: {{ bareos.traymonitor.pkg }}
     - version: {{ bareos.version }}
@@ -19,7 +19,7 @@ install_trymon_package:
     {% endif %}
 
 {% if tm_config != {} %}
-bareos_trymon_cfg_file:
+bareos_traymon_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
@@ -32,5 +32,5 @@ bareos_trymon_cfg_file:
     - user: root
     - group: root
     - require:
-      - pkg: bareos-traymonitor
+      - pkg: install_traymon_package
 {% endif %}

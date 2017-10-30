@@ -40,7 +40,7 @@ bareos_storage_cfg_file:
     - user: root
     - group: root
     - require:
-      - pkg: bareos-storage
+      - pkg: install_storage_package
     - watch_in:
       - service: bareos_storage_service
 {% endif %}
@@ -50,4 +50,4 @@ bareos_storage_service:
     - name: {{ bareos.storage.service }}
     - enable: true
     - require:
-      - pkg: bareos-storage
+      - pkg: install_storage_package
