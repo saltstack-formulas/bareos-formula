@@ -21,7 +21,7 @@ include:
     {% endif %}
 {% endfor %}
 
-install_plugins:
+install_director_plugins:
   pkg.installed:
     - pkgs: {{ bareos.director.plugins }}
     {% if bareos.use_upstream_repo %}
