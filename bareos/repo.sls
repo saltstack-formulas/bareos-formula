@@ -10,7 +10,7 @@
   {% set distro = grains.os ~ '_' ~ grains.osmajorrelease %}
 {%- endif %}
 
-{% if salt['grains.get']('os_family') == 'Debian' -%}
+{% if grains.os_family == 'Debian' -%}
 bareos_repo:
   pkgrepo.managed:
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
@@ -19,7 +19,7 @@ bareos_repo:
     - keyid: {{ bareos.repo.keyid }}
     - keyserver: {{ bareos.repo.keyserver }}
 
-{%- elif salt['grains.get']('os_family') == 'RedHat' %}
+{%- elif grains.os_family == 'RedHat' %}
 bareos_repo:
   pkgrepo.managed:
     - name: bareos
