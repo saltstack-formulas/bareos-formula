@@ -4,6 +4,8 @@ bareos:
   version: 16.2.4-12.1
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
+  system_user: bareos
+  system_group: bareos
 
   use_upstream_repo: true
   # One of http://download.bareos.org/bareos/release/

@@ -28,9 +28,9 @@ bareos_traymon_cfg_file:
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 644
-    - user: root
-    - group: root
+    - mode: 750
+    - user: {{ bareos.system_user }}
+    - user: {{ bareos.system_group }}
     - require:
       - pkg: install_traymon_package
 {% endif %}
