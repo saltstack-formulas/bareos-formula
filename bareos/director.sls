@@ -35,7 +35,7 @@ bareos_director_cfg_file:
     - name: {{ bareos.config_dir }}/{{ bareos.director.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ dir_config|json() }}
+        config: {{ dir_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja

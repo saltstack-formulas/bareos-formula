@@ -32,7 +32,7 @@ bareos_storage_cfg_file:
     - name: {{ bareos.config_dir }}/{{ bareos.storage.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ sd_config|json() }}
+        config: {{ sd_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja

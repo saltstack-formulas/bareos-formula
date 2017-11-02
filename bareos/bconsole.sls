@@ -24,7 +24,7 @@ bareos_bconsole_cfg_file:
     - name: {{ bareos.config_dir }}/{{ bareos.bconsole.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ bc_config|json() }}
+        config: {{ bc_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja

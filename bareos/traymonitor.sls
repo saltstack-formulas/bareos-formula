@@ -24,7 +24,7 @@ bareos_traymon_cfg_file:
     - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ tm_config|json() }}
+        config: {{ tm_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja

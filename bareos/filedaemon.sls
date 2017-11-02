@@ -32,7 +32,7 @@ bareos_fd_cfg_file:
     - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ fd_config|json() }}
+        config: {{ fd_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
