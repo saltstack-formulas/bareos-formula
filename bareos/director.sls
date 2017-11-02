@@ -29,10 +29,27 @@ install_director_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+cleanup_director_default_config:
+  file.directory:
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}
+    - mode: 750
+    - user: {{ bareos.system_user }}
+    - user: {{ bareos.system_group }}
+    - clean: true
+    - onchanges:
+      - pkg: bareos-director
+
+create_director_dir:
+  file.directory:
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director
+    - mode: 750
+    - user: {{ bareos.system_user }}
+    - user: {{ bareos.system_group }}
+
 {% if dir_config != {} %}
 bareos_director_cfg_file:
   file.managed:
-    - name: {{ bareos.config_dir }}/{{ bareos.director.config_file }}
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director/{{ bareos.director.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
         config: {{ dir_config|yaml() }}

@@ -18,6 +18,12 @@ install_traymon_package:
       - pkgrepo: bareos_repo
     {% endif %}
 
+cleanup_traymon_default_config:
+  file.absent:
+    - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_dir }}
+    - onchanges:
+      - pkg: install_traymon_package
+
 {% if tm_config != {} %}
 bareos_traymon_cfg_file:
   file.managed:

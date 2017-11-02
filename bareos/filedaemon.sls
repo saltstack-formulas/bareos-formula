@@ -26,6 +26,12 @@ install_fd_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+cleanup_fd_default_config:
+  file.absent:
+    - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_dir }}
+    - onchanges:
+      - pkg: install_fd_package
+
 {% if fd_config != {} %}
 bareos_fd_cfg_file:
   file.managed:

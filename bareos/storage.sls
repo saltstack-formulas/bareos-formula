@@ -26,6 +26,12 @@ install_storage_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+cleanup_storage_default_config:
+  file.absent:
+    - name: {{ bareos.config_dir }}/{{ bareos.storage.config_dir }}
+    - onchanges:
+      - pkg: install_storage_package
+
 {% if sd_config != {} %}
 bareos_storage_cfg_file:
   file.managed:
