@@ -1,0 +1,270 @@
+bareos:
+  use_upstream_repo: true
+  director:
+    database:
+      manage: true
+      backend: postgresql
+    config:
+      Catalog:
+        MyCatalog:
+          DbDriver: postgresql
+          DbName: bareos
+          DbUser: bareos
+          MultipleConnections: false
+
+      Client:
+        bareos-fd:
+          Address: localhost
+          Description: Client resource of the Director itself.
+          Password: 'PL5_Ch4ng3_M3!'
+
+      Console:
+        bareos-mon:
+          Command ACL: 'status, .status'
+          Description: Restricted console used by tray-monitor to get the status of the director.
+          Job ACL: '*all*'
+          Password: 'PL5_Ch4ng3_M3!'
+
+      Director:
+        bareos-dir:
+          Auditing: 'Yes'
+          MaximumConcurrentJobs: 10
+          Messages: Daemon
+          Password: 'PL5_Ch4ng3_M3!'
+          QueryFile: '/usr/lib/bareos/scripts/query.sql'
+
+      FileSet:
+        Catalog:
+          Description: "Backup the catalog dump and Bareos configuration files."
+          Include:
+            Options:
+              Signature: MD5
+
+            File:
+              - /var/lib/bareos/bareos.sql
+              - /etc/bareos
+
+        LinuxAll:
+          Description: "Backup all regular filesystems, determined by filesystem type."
+          Include:
+            Options:
+              Signature: MD5
+              OneFS: 'No'
+              FsType:
+                - btrfs
+                - ext2
+                - ext3
+                - ext4
+                - reiserfs
+                - jfs
+                - xfs
+                - zfs
+
+            File: /
+
+          Exclude:
+            File:
+              - /var/lib/bareos
+              - /var/lib/bareos/storage
+              - /proc
+              - /tmp
+              - /var/tmp
+              - /.journal
+              - /.fsck
+
+        SelfTest:
+          Description: "fileset just to backup some files for selftest"
+          Include:
+            Options:
+              Signature: MD5
+
+            File: /usr/sbin
+
+      Job:
+        backup-bareos-fd:
+          JobDefs: "DefaultJob"
+          Client: "bareos-fd"
+
+        BackupCatalog:
+          Description: "Backup the catalog database (after the nightly save)"
+          JobDefs: "DefaultJob"
+          Level: Full
+          FileSet: "Catalog"
+          Schedule: "WeeklyCycleAfterBackup"
+
+          RunBeforeJob: "/usr/lib/bareos/scripts/make_catalog_backup.pl MyCatalog"
+          RunAfterJob : "/usr/lib/bareos/scripts/delete_catalog_backup"
+
+          Write Bootstrap: "|/usr/bin/bsmtp -h localhost -f \"\\(Bareos\\) \" -s \"Bootstrap for Job %j\" root@localhost"
+          Priority: 11
+
+        RestoreFiles:
+          Description: "Standard Restore template. Only one such job is needed for all standard Jobs/Clients/Storage ..."
+          Type: Restore
+          Client: bareos-fd
+          FileSet: "LinuxAll"
+          Storage: File
+          Pool: Incremental
+          Messages: Standard
+          Where: /tmp/bareos-restores
+
+      JobDefs:
+        DefaultJob:
+          Type: Backup
+          Level: Incremental
+          Client: bareos-fd
+          FileSet: "SelfTest"
+          Schedule: "WeeklyCycle"
+          Storage: File
+          Messages: Standard
+          Pool: Incremental
+          Priority: 10
+          Write Bootstrap: "/var/lib/bareos/%c.bsr"
+          Full Backup Pool: Full
+          Differential Backup Pool: Differential
+          Incremental Backup Pool: Incremental
+
+      Messages:
+        Daemon:
+          Description: "Message delivery for daemon messages (no job)."
+          mailcommand: "change me"
+          mail: 'root@localhost = all, !skipped, !audit'
+          console: all, !skipped, !saved, !audit
+          append:
+            - '"/var/log/bareos/bareos.log" = all, !skipped, !audit'
+            - '"/var/log/bareos/bareos-audit.log" = audit'
+        Standard:
+          Description: "Reasonable message delivery -- send most everything to email address and to the console."
+          operatorcommand: "change me"
+          mailcommand: "change me"
+          operator: 'root@localhost = mount'
+          mail: 'root@localhost = all, !skipped, !saved, !audit'
+          console: all, !skipped, !saved, !audit
+          append: '"/var/log/bareos/bareos.log" = all, !skipped, !saved, !audit'
+          catalog: 'all, !skipped, !saved, !audit'
+
+      Pool:
+        Differential:
+          Pool Type: Backup
+          Recycle: 'Yes'                     # Bareos can automatically recycle Volumes
+          AutoPrune: 'Yes'                   # Prune expired volumes
+          Volume Retention: 90 days          # How long should the Differential Backups be kept? (#09)
+          Maximum Volume Bytes: 10G          # Limit Volume size to something reasonable
+          Maximum Volumes: 100               # Limit number of Volumes in Pool
+          Label Format: "Differential-"      # Volumes will be labeled "Differential-<volume-id>"
+        Full:
+          Pool Type: Backup
+          Recycle: 'Yes'                     # Bareos can automatically recycle Volumes
+          AutoPrune: 'Yes'                   # Prune expired volumes
+          Volume Retention: 365 days         # How long should the Full Backups be kept? (#06)
+          Maximum Volume Bytes: 50G          # Limit Volume size to something reasonable
+          Maximum Volumes: 100               # Limit number of Volumes in Pool
+          Label Format: "Full-"              # Volumes will be labeled "Full-<volume-id>"
+        Incremental:
+          Pool Type: Backup
+          Recycle: 'Yes'                     # Bareos can automatically recycle Volumes
+          AutoPrune: 'Yes'                   # Prune expired volumes
+          Volume Retention: 30 days          # How long should the Incremental Backups be kept?  (#12)
+          Maximum Volume Bytes: 1G           # Limit Volume size to something reasonable
+          Maximum Volumes: 100               # Limit number of Volumes in Pool
+          Label Format: "Incremental-"       # Volumes will be labeled "Incremental-<volume-id>"
+        Scratch:
+          Pool Type: Scratch
+
+      Profile:
+        operator:
+          Description: Profile allowing falsermal Bareos operations.
+          Job ACL: '*all*'
+          Client ACL: '*all*'
+          Storage ACL: '*all*'
+          Schedule ACL: '*all*'
+          Pool ACL: '*all*'
+          Command ACL:
+            - '!.bvfs_clear_cache, !.exit, !.sql'
+            - '!configure, !create, !delete, !purge, !sqlquery, !umount, !unmount'
+            - '*all*'
+          FileSet ACL: '*all*'
+          Catalog ACL: '*all*'
+          Where ACL: '*all*'
+          Plugin Options ACL: '*all*'
+
+      Schedule:
+        WeeklyCycleAfterBackup:
+          Description: This schedule does the catalog. It starts after the WeeklyCycle.
+          Run:
+            - 'Full Mon-Fri at 21:10'
+
+        WeeklyCycle:
+          Run:
+            - 'Full 1st Sat at 21:00'
+            - 'Differential 2nd-5th Sat at 21:00'
+            - 'Incremental Mon-Fri at 21:00'
+
+      Storage:
+        File:
+          Address: localhost
+          Password: 'PL5_Ch4ng3_M3!'
+          Device: FileStorage
+          Media Type: File
+  filedaemon:
+    config:
+      Director:
+        bareos-dir:
+          Description: The default BareOS director resource
+          Password: 'PL5_Ch4ng3_M3!'
+      Client:
+        bareos-fd:
+          MaximumConcurrentJobs: 20
+      Messages:
+        Standard:
+          Director: bareos-debian-jessie64-dir = all, !skipped, !restored
+  storage:
+    config:
+      Director:
+        bareos-dir:
+          Description: Director, who is permitted to contact this storage daemon.
+          Password: 'PL5_Ch4ng3_M3!'
+          Monitor: false
+          MaximumBandwidthPerJob: 0
+
+      Storage:
+        bareos-sd:
+          MaximumConcurrentJobs: 20
+          MaximumNetworkBufferSize: 0
+          MaximumBandwidthPerJob: 0
+          AbsoluteJobTimeout: 0
+
+      Device:
+        FileStorage:
+          Description: File device. A connecting Director must have the same Name and MediaType.
+          MediaType: File
+          ArchiveDevice: /var/lib/bareos/storage
+          RemovableMedia: false
+          RandomAccess: true
+          AutomaticMount: true
+          LabelMedia: true
+          AlwaysOpen: false
+          MaximumNetworkBufferSize: 0
+          MinimumBlockSize: 0
+          MaximumVolumeSize: 0
+          VolumeCapacity: 0
+          MaximumConcurrentJobs: 0
+          MaximumSpoolSize: 0
+          MaximumJobSpoolSize: 0
+          DriveIndex: 0
+          MaximumPartSize: 0
+          LabelType: bareos
+          DriveTapeAlertEnabled: false
+          DriveCryptoEnabled: false
+          QueryCryptoStatus: false
+
+      Messages:
+        Standard:
+          director: bareos-dir = all
+  bconsole:
+    config:
+      Director:
+        bareos-dir:
+          DirPort: 9101
+          Address: localhost
+          Password: 'PL5_Ch4ng3_M3!'

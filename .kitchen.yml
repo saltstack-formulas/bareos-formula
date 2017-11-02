@@ -38,12 +38,8 @@ suites:
         - name: postgres
           repo: git
           source: https://github.com/saltstack-formulas/postgres-formula.git
-      pillars:
-        bareos.sls:
-          bareos:
-            director:
-              database:
-                backend: postgresql
+      pillars-from-files:
+        bareos.sls: test/integration/bareos-postgresql/bareos-postgresql.pillar.yaml
       state_top:
         base:
           '*':
