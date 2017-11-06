@@ -34,7 +34,7 @@ cleanup_director_default_config:
     - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}
     - mode: 750
     - user: {{ bareos.system_user }}
-    - user: {{ bareos.system_group }}
+    - group: {{ bareos.system_group }}
     - clean: true
     - onchanges:
       - pkg: bareos-director
@@ -44,7 +44,7 @@ create_director_dir:
     - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director
     - mode: 750
     - user: {{ bareos.system_user }}
-    - user: {{ bareos.system_group }}
+    - group: {{ bareos.system_group }}
 
 {% if dir_config != {} %}
 bareos_director_cfg_file:
@@ -58,7 +58,7 @@ bareos_director_cfg_file:
     - template: jinja
     - mode: 750
     - user: {{ bareos.system_user }}
-    - user: {{ bareos.system_group }}
+    - group: {{ bareos.system_group }}
     - require:
       - pkg: bareos-director
     - watch_in:

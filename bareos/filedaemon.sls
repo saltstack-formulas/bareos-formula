@@ -44,7 +44,7 @@ bareos_fd_cfg_file:
     - template: jinja
     - mode: 750
     - user: {{ bareos.system_user }}
-    - user: {{ bareos.system_group }}
+    - group: {{ bareos.system_group }}
     - require:
       - pkg: install_fd_package
     - watch_in:

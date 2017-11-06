@@ -36,7 +36,7 @@ bareos_traymon_cfg_file:
     - template: jinja
     - mode: 750
     - user: {{ bareos.system_user }}
-    - user: {{ bareos.system_group }}
+    - group: {{ bareos.system_group }}
     - require:
       - pkg: install_traymon_package
 {% endif %}
