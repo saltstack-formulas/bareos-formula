@@ -29,6 +29,7 @@ install_director_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+{% if dir_config != {} %}
 cleanup_director_default_config:
   file.directory:
     - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}
@@ -46,7 +47,6 @@ create_director_dir:
     - user: {{ bareos.system_user }}
     - group: {{ bareos.system_group }}
 
-{% if dir_config != {} %}
 bareos_director_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director/{{ bareos.director.config_file }}
@@ -56,7 +56,7 @@ bareos_director_cfg_file:
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 750
+    - mode: 640
     - user: {{ bareos.system_user }}
     - group: {{ bareos.system_group }}
     - require:

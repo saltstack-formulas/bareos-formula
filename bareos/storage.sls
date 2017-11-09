@@ -26,13 +26,13 @@ install_storage_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+{% if sd_config != {} %}
 cleanup_storage_default_config:
   file.absent:
     - name: {{ bareos.config_dir }}/{{ bareos.storage.config_dir }}
     - onchanges:
       - pkg: install_storage_package
 
-{% if sd_config != {} %}
 bareos_storage_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.storage.config_file }}
@@ -42,7 +42,7 @@ bareos_storage_cfg_file:
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 750
+    - mode: 640
     - user: {{ bareos.system_user }}
     - group: {{ bareos.system_group }}
     - require:

@@ -18,13 +18,14 @@ install_traymon_package:
       - pkgrepo: bareos_repo
     {% endif %}
 
+
+{% if tm_config != {} %}
 cleanup_traymon_default_config:
   file.absent:
     - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_dir }}
     - onchanges:
       - pkg: install_traymon_package
 
-{% if tm_config != {} %}
 bareos_traymon_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.traymonitor.config_file }}
@@ -34,7 +35,7 @@ bareos_traymon_cfg_file:
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 750
+    - mode: 640
     - user: {{ bareos.system_user }}
     - group: {{ bareos.system_group }}
     - require:

@@ -26,13 +26,13 @@ install_fd_plugins:
       - pkgrepo: bareos_repo
     {% endif %}
 
+{% if fd_config != {} %}
 cleanup_fd_default_config:
   file.absent:
     - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_dir }}
     - onchanges:
       - pkg: install_fd_package
 
-{% if fd_config != {} %}
 bareos_fd_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_file }}
@@ -42,7 +42,7 @@ bareos_fd_cfg_file:
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 750
+    - mode: 640
     - user: {{ bareos.system_user }}
     - group: {{ bareos.system_group }}
     - require:
