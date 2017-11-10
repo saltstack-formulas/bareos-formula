@@ -34,10 +34,10 @@
     {% else %}
         {%- for name, config in resources.iteritems() %}
 {{ type }} {
-            {% if (type|lower) in requires_name and 'name' not in (config|lower) %}
+            {%- if (type|lower) in requires_name and ( (config.name is not defined) and (config.Name is not defined) )  %}
     Name = "{{ name }}"
             {%- endif %}
-            {%- if (type|lower) in require_password and 'password' not in (config|lower) %}
+            {%- if (type|lower) in require_password and ( (config.password is not defined) and (config.Password is not defined) )  %}
     Password = "{{ default_password }}"
             {%- endif %}
     {{ _config(config) }}
