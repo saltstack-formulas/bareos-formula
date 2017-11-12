@@ -27,18 +27,24 @@ install_fd_plugins:
     {% endif %}
 
 {% if fd_config != {} %}
+cleanup_fd_default_config:
+  file.absent:
+    - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_dir }}
+    - onchanges:
+      - pkg: install_fd_package
+
 bareos_fd_cfg_file:
   file.managed:
     - name: {{ bareos.config_dir }}/{{ bareos.filedaemon.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ fd_config|json() }}
+        config: {{ fd_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 644
-    - user: root
-    - group: root
+    - mode: 640
+    - user: {{ bareos.system_user }}
+    - group: {{ bareos.system_group }}
     - require:
       - pkg: install_fd_package
     - watch_in:

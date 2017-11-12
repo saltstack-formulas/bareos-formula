@@ -4,6 +4,8 @@ bareos:
   version: 16.2.4-12.1
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
+  system_user: bareos
+  system_group: bareos
 
   use_upstream_repo: true
   # One of http://download.bareos.org/bareos/release/
@@ -18,6 +20,7 @@ bareos:
 
   director:
     pkg: bareos-director
+    config_dir: bareos-dir.d
     config_file: bareos-dir.conf
     plugins: []
     service: bareos-dir
@@ -31,14 +34,16 @@ bareos:
 
   storage:
     pkg: bareos-storage
-    backends: []
+    config_dir: bareos-sd.d
     config_file: bareos-sd.conf
+    backends: []
     service: bareos-sd
 
   filedaemon:
     pkg: bareos-filedaemon
-    plugins: []
+    config_dir: bareos-fd.d
     config_file: bareos-fd.conf
+    plugins: []
     service: bareos-fd
 
   client:
@@ -46,7 +51,9 @@ bareos:
 
   traymonitor:
     pkg: bareos-traymonitor
+    config_dir: tray-monitor.d
     config_file: tray-monitor.conf
 
   bconsole:
     pkg: bareos-bconsole
+    config_file: bconsole.conf

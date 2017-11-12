@@ -30,18 +30,35 @@ install_director_plugins:
     {% endif %}
 
 {% if dir_config != {} %}
+cleanup_director_default_config:
+  file.directory:
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}
+    - mode: 750
+    - user: {{ bareos.system_user }}
+    - group: {{ bareos.system_group }}
+    - clean: true
+    - onchanges:
+      - pkg: bareos-director
+
+create_director_dir:
+  file.directory:
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director
+    - mode: 750
+    - user: {{ bareos.system_user }}
+    - group: {{ bareos.system_group }}
+
 bareos_director_cfg_file:
   file.managed:
-    - name: {{ bareos.config_dir }}/{{ bareos.director.config_file }}
+    - name: {{ bareos.config_dir }}/{{ bareos.director.config_dir }}/director/{{ bareos.director.config_file }}
     - source: salt://bareos/files/bareos-config.jinja
     - context:
-        config: {{ dir_config|json() }}
+        config: {{ dir_config|yaml() }}
         default_password: {{ bareos.default_password }}
         require_password: {{ require_password }}
     - template: jinja
-    - mode: 644
-    - user: root
-    - group: root
+    - mode: 640
+    - user: {{ bareos.system_user }}
+    - group: {{ bareos.system_group }}
     - require:
       - pkg: bareos-director
     - watch_in:
