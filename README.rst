@@ -1,15 +1,13 @@
-==============
-bareos-formula
-==============
+# bareos-formula
 
-A saltstack formula to install and configure `BareOS <https://www.bareos.org>`_,
+A saltstack formula to install and configure [BareOS](https://www.bareos.org>),
 a master/slave server tool.
 
 (This formula will probably be useful to install Bacula too, just changing the
 `pkg` variables in the pillar data).
 
-OS Compatibility
-================
+## OS Compatibility
+
 
 Tested with:
 
@@ -17,74 +15,47 @@ Tested with:
 * CentOS 6 and 7
 * Ubuntu 16.04
 
-.. note::
+See the full [Salt Formulas installation and usage instructions](http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html)
 
-    See the full `Salt Formulas installation and usage instructions
-    <http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html>`_.
-
-Formula Dependencies
-====================
+## Formula Dependencies
 
 This formula won't try to install or configure a database server, just tries to
 configure the BareOS database if possible. In case you want to use ``Postgresql``
 or ``MySQL``, use the respective formulas. If your database is on another host,
 you just need to configure the database host/user/password in the pillar.
 
-TODO
-====
+## Available states
 
-The database management is REALLY basic yet and should be used with care. 
-
-
-Available states
-================
-
-.. contents::
-    :local:
-
-``bareos``
-----------
+### **`bareos`**
 
 Installs and configures all the bareos components (includes ``bareos.director``,
 ``bareos.storage`` and ``bareos.client``.
 
-``bareos.director``
--------------------
-
+### **`bareos.director`**
 Installs and configures the bareos director, and starts the associated service.
 
-``bareos.storage``
-------------------
+### **`bareos.director_dynamic_config`**
+Dynamically add/remove clients and their director specific configuration based on mine functions.
 
+### **`bareos.storage`**
 Installs and configures the bareos storage, and starts the associated service.
 
-``bareos.client``
------------------
-
+### **`bareos.client`**
 Meta-state that includes `bareos.filedaemon`, `baeros.bconsole`  and `bareos.traymonitor`.
 
-``bareos.filedaemon``
----------------------
-
+### **`bareos.filedaemon`**
 Installs and configures the bareos filedaemon, and starts the associated service.
 
-``bareos.bconsole``
--------------------
-
+### **`bareos.bconsole`**
 Installs and configures the bareos console.
 
-``bareos.repo``
----------------
-
+### **`bareos.repo`**
 Configures the upstream bareos' repo (true, by default).
 
-``bareos.traymonitor``
-----------------------
-
+### **`bareos.traymonitor`**
 Installs and configures the bareos tray-monitor.
 
-Example Pillar
-==============
+## Example Pillar
 
 BareOS daemons' configuration, since version >= 16.2.2, can be done by mean of
 config files or config directories/subdirectories.
@@ -98,7 +69,7 @@ The formula, to ease management, follows this logic:
    set by any other mean) will be used. No configuration will be attempted.
 
    This means the current `subdirectories` configuration schema provided by the
-   package will be used (see `Configuration Layout <http://doc.bareos.org/master/html/bareos-manual-main-reference.html#QQ2-1-150>`_.
+   package will be used (see [Configuration Layout](http://doc.bareos.org/master/html/bareos-manual-main-reference.html#QQ2-1-150).
 
 3. If a pillar key named `config` is present for a given daemon, it will be
    installed and configured. This formula will use the "old approach" of setting
@@ -111,17 +82,16 @@ The formula, to ease management, follows this logic:
 
    The configuration for each BareOS daemon (director, storage, filedaemon) is
    generated from pillar data if a key `config` exist for such daemon, ie:
-    
-.. code:: yaml
 
-    bareos:
-    
-      director:
-        ...
-        config:
-          ...
-          ...
+```yaml
+bareos:
 
+  director:
+    ...
+    config:
+      ...
+      ...
+```
 
    If no `config` section is given, no configuration will be perfomed, and the
    existing configuration will be used (or the one provided by the package).
@@ -129,7 +99,7 @@ The formula, to ease management, follows this logic:
    The `config` sections are ordered by resource type, like in the following example.
 
    Keys names are case insensitive.
-    
+
    Keys that can be repeated multiple times (like `run`, in Schedules) should be
    written as lists, and they will be expanded accordingly.
 
@@ -144,85 +114,130 @@ The formula, to ease management, follows this logic:
    The include file `@` parameter is an 'special case' of the resource_type, and should
    be written as a list instead of a dict, as shown below.
 
-.. code:: yaml
-    
-    bareos:
-      daemon:
-        config:   
-          resource_type1:
-            resource1_name:
-              param1: value1
-              param2: 2
-              param3:
-                sub_param3a:
-                  param3b: value3b
-                  param3c: true
-                  param3d:
-                    - value3d_1
-                    - value3d_2
-                    - value3d_3
-                  param3e: value_3e
-                sub_param3b: 3
-            resource2_name:
-              name: someothername
-              param1: value1
-    
-          resource_type2:
-            resource3_name:
-              param2: value2
-    
-          '@':
-            - 'include_file1'
-            - '|"/etc/bareos/generate_configuration_to_stdout.sh"'
-            - '|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""'
-    
+```yaml
+bareos:
+  daemon:
+    config:
+      resource_type1:
+        resource1_name:
+          param1: value1
+          param2: 2
+          param3:
+            sub_param3a:
+              param3b: value3b
+              param3c: true
+              param3d:
+                - value3d_1
+                - value3d_2
+                - value3d_3
+              param3e: value_3e
+            sub_param3b: 3
+        resource2_name:
+          name: someothername
+          param1: value1
+
+      resource_type2:
+        resource3_name:
+          param2: value2
+
+      '@':
+        - 'include_file1'
+        - '|"/etc/bareos/generate_configuration_to_stdout.sh"'
+        - '|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""'
+```
+
    will create the following config file:
-    
-.. code:: yaml
 
-    resource_type1 {
-                
-        Name = "resource1_name"
-    
-        param1 = "value1"
-        param2 = 2
-        param3 {
-    
-            sub_param3a {
-    
-                param3b = "value3b"
-                param3c = True
-                param3d = "value3d_1"
-                param3d = "value3d_2"
-                param3d = "value3d_3"
-                param3e = "value_3e"
-            }
-            sub_param3b = 3
+``` yaml
+resource_type1 {
+
+    Name = "resource1_name"
+
+    param1 = "value1"
+    param2 = 2
+    param3 {
+
+        sub_param3a {
+
+            param3b = "value3b"
+            param3c = True
+            param3d = "value3d_1"
+            param3d = "value3d_2"
+            param3d = "value3d_3"
+            param3e = "value_3e"
         }
+        sub_param3b = 3
     }
-    
-    resource_type1 {
-                
-        Name = "someothername"
-    
-        param1 = "value1"
-    
-    }
-    
-    resource_type2 {
-                
-        Name = "resource3_name"
-    
-        param2 = "value2"
-    
-    }
-    
-    @include_file1
-    @|"/etc/bareos/generate_configuration_to_stdout.sh"
-    @|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""
+}
 
+resource_type1 {
+
+    Name = "someothername"
+
+    param1 = "value1"
+
+}
+
+resource_type2 {
+
+    Name = "resource3_name"
+
+    param2 = "value2"
+
+}
+
+@include_file1
+@|"/etc/bareos/generate_configuration_to_stdout.sh"
+@|"sh -c \"/etc/bareos/generate_client_configuration_to_stdout.sh clientname=client1.example.com\""
+```
 
    See *bind/pillar.example* for a full example.
+
+Director Dynamic Configuration
+==============================
+
+The Salt Mine is used to collect arbitrary data from Minions and store it on the Master.
+This data is then made available to all Minions via the salt.modules.mine module.
+```
+More info: https://docs.saltstack.com/en/latest/topics/mine/
+```
+We leverage this functionality to automatically add/remove clients to director and associate
+them with the relevant jobs, jobdef and schedules.
+
+### How to use it
+Add `bareos.director_dynamic_config` state your director TOP state file
+
+On every minion pillar, you should add the supported mine functions and the relevant pillar config
+as the example below:
+``` yaml
+  mine_functions:
+  bareos_client:
+    - mine_function: pillar.get
+    - bareos:filedaemon:config:Director:bareos-dir:Password
+  bareos_dynamic_cfg:
+    - mine_function: pillar.get
+    - bareos:dynamic
+
+bareos:
+  filedaemon:
+    config:
+      Director:
+        bareos-dir:
+          ...
+          Password: 'PL5_Ch4ng3_M3!_client'
+      Client:
+        ...
+      Messages:
+        ...
+  dynamic:
+    Job:
+      {{ grains['fqdn'] }}-sample-job:
+        JobDefs: "{{ grains['fqdn'] }}-sample-jobdef"
+        Client: "{{ grains['fqdn'] }}"
+    JobDefs:
+      {{ grains['fqdn'] }}-sample-jobdef:
+        ...
+```
 
 Contributions
 =============
@@ -233,4 +248,3 @@ Contributions are always welcome. All development guidelines you have to know ar
 * set sane default settings
 * test your code
 * update README.rst doc
-

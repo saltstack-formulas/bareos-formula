@@ -1,0 +1,51 @@
+{%- set allowed_cfg_types = ['job', 'jobdefs', 'schedule', 'fileset'] %}
+{%- set ind_increment = 4 %}
+
+{%- macro _config(config, ind=4, operator=' = ') -%}
+    {%- for n, v in config.iteritems() %}
+        {#- The @ resources are a special case -#}
+        {%- if n == "@" %}
+            {%- for include in v %}
+{{ n }}{{ include }}
+            {%- endfor %}
+        {%- elif v is mapping %}
+{{ n|indent(ind, True) }} {
+{{ _config(v, ind+ind_increment) }}
+{{ '}'|indent(ind, True) }}
+        {%- elif v is number %}
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
+        {%- elif v is string  %}
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
+        {%- else %}
+            {%- for value in v %}
+{{ n|indent(ind, True) }}{{ operator }}{{ value }}
+            {%- endfor %}
+        {%- endif %}
+    {%- endfor %}
+{%- endmacro -%}
+#
+# This file managed by Salt, do not edit by hand!!
+# Modify the salt pillar for bareos, instead.
+#
+
+{%- for host, values in salt.mine.get('*', 'bareos_dynamic_cfg') | dictsort() %}
+  {%- for type, resources in values.iteritems() %}
+    {%- if type|lower in allowed_cfg_types %}
+      {%- if type == "@" %}
+        {%- for include in resources %}
+{{ type }}{{ include }}
+        {%- endfor %}
+      {% else %}
+        {%- for name, config in resources.iteritems() %}
+
+{{ type }} {
+          {%- if (type|lower) in allowed_cfg_types and ( (config.name is not defined) and (config.Name is not defined) )  %}
+    Name = "{{ name }}"
+            {%- endif %}
+    {{ _config(config) }}
+}
+        {%- endfor %}
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+{%- endfor %}
