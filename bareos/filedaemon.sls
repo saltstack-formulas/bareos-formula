@@ -51,6 +51,14 @@ bareos_fd_cfg_file:
       - service: bareos_fd_service
 {% endif %}
 
+{% if pillar.get('bareos:generate_unique_password', False) %}
+/etc/bareos/bareos-dir.d/password.conf:
+  file.managed:
+    - contents: "Password: {{ salt['random.get_str']() }}"
+    - replace: False
+{% endif %}
+
+
 bareos_fd_service:
   service.running:
     - name: {{ bareos.filedaemon.service }}
