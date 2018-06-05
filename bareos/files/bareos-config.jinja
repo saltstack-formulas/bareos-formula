@@ -38,8 +38,8 @@
     Name = "{{ name }}"
             {%- endif %}
             {%- if (type|lower) in require_password and ( (config.password is not defined) and (config.Password is not defined) )  %}
-              {%- if pillar.get("bareos:generate_unique_password", False) %}
-    @/etc/bareos/bareos-dir.d/director_password.conf
+              {%- if salt['pillar.get']("bareos:generate_unique_password", False) %}
+    @/etc/bareos/bareos-dir.d/password.conf
               {%- else %}
     Password = "{{ default_password }}"
               {%- endif %}
