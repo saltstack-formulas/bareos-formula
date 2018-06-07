@@ -4,8 +4,9 @@
 {% set fd_config = bareos.filedaemon.config if bareos.filedaemon.config is defined else {} %}
 {% set require_password = ['director'] %}
 
-{% if bareos.use_upstream_repo %}
 include:
+  - bareos.generate_password
+{% if bareos.use_upstream_repo  %}
   - bareos.repo
 {% endif %}
 
@@ -49,13 +50,6 @@ bareos_fd_cfg_file:
       - pkg: install_fd_package
     - watch_in:
       - service: bareos_fd_service
-{% endif %}
-
-{% if salt['pillar.get']('bareos:generate_unique_password', False) %}
-/etc/bareos/bareos-dir.d/password.conf:
-  file.managed:
-    - contents: "Password: {{ salt['random.get_str']() }}"
-    - replace: False
 {% endif %}
 
 
