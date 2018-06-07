@@ -14,7 +14,11 @@
 bareos_repo:
   pkgrepo.managed:
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
+    {% if bareos.repo.repo_url %}
+    - name: deb {{ bareos.repo.repo_url }} ./
+    {% else %}
     - name: deb {{ bareos.repo.url_base }}/{{ bareos.repo.version }}/{{ distro }} ./
+    {% endif %}
     - file: {{ bareos.repo.file }}
     - keyid: {{ bareos.repo.keyid }}
     - keyserver: {{ bareos.repo.keyserver }}
