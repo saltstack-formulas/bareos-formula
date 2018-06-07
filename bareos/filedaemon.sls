@@ -4,8 +4,9 @@
 {% set fd_config = bareos.filedaemon.config if bareos.filedaemon.config is defined else {} %}
 {% set require_password = ['director'] %}
 
-{% if bareos.use_upstream_repo %}
 include:
+  - bareos.generate_password
+{% if bareos.use_upstream_repo  %}
   - bareos.repo
 {% endif %}
 
@@ -50,6 +51,7 @@ bareos_fd_cfg_file:
     - watch_in:
       - service: bareos_fd_service
 {% endif %}
+
 
 bareos_fd_service:
   service.running:
