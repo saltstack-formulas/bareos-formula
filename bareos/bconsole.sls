@@ -4,8 +4,9 @@
 {% set bc_config = bareos.bconsole.config if bareos.bconsole.config is defined else {} %}
 {% set require_password = ['director'] %}
 
-{% if bareos.use_upstream_repo %}
 include:
+  - bareos.generate_password
+{% if bareos.use_upstream_repo %}
   - bareos.repo
 {% endif %}
 

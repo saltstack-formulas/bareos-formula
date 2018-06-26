@@ -6,8 +6,9 @@
 {% set backend_db_pkg = "bareos-database-" + bareos.director.database.backend %}
 {% set pkgs = [bareos.director.pkg, backend_db_pkg] %}
 
-{% if bareos.use_upstream_repo %}
 include:
+  - bareos.generate_password
+{% if bareos.use_upstream_repo %}
   - bareos.repo
 {% endif %}
 
