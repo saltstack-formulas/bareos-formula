@@ -39,7 +39,7 @@
             {%- endif %}
             {%- if (type|lower) in require_password and ( (config.password is not defined) and (config.Password is not defined) )  %}
               {%- if salt['pillar.get']("bareos:generate_unique_password", False) %}
-    @/etc/bareos/bareos-dir.d/password.conf
+    @/etc/bareos/password.conf
               {%- else %}
     Password = "{{ default_password }}"
               {%- endif %}
