@@ -9,16 +9,13 @@
 {%- else %}
   {% set distro = grains.os ~ '_' ~ grains.osmajorrelease %}
 {%- endif %}
+{% set url = bareos.repo.repo_url if bareos.repo.repo_url is defined else bareos.repo.url_base + '/' + bareos.repo.version + '/' + distro %}
 
 {% if grains.os_family == 'Debian' -%}
 bareos_repo:
   pkgrepo.managed:
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
-    {% if bareos.repo.repo_url %}
-    - name: deb {{ bareos.repo.repo_url }} ./
-    {% else %}
-    - name: deb {{ bareos.repo.url_base }}/{{ bareos.repo.version }}/{{ distro }} ./
-    {% endif %}
+    - name: deb {{ url }} ./
     - file: {{ bareos.repo.file }}
     - keyid: {{ bareos.repo.keyid }}
     - keyserver: {{ bareos.repo.keyserver }}
@@ -29,9 +26,9 @@ bareos_repo:
     - name: bareos
     - file: {{ bareos.repo.file }}
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
-    - baseurl: {{ bareos.repo.url_base }}/{{ bareos.repo.version }}/{{ distro }}/
+    - baseurl: {{ url }}/
     - gpgcheck: 1
-    - gpgkey: {{ bareos.repo.url_base }}/{{ bareos.repo.version }}/{{ distro }}/repodata/repomd.xml.key
+    - gpgkey: {{ url }}/repodata/repomd.xml.key
 
 {%- else %}
 bareos_repo: {}
