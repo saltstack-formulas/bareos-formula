@@ -1,0 +1,12 @@
+#
+# This file managed by Salt, do not edit by hand!!
+# Modify the salt pillar for bareos, instead.
+#
+{% for host, password in salt.mine.get('*', 'bareos_client') | dictsort() %}
+Client {
+    Name = "{{ host }}"
+
+    Address = {{ host }}
+    password = "{{ password }}"
+}
+{% endfor %}

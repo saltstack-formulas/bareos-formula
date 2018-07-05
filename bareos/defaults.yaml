@@ -31,6 +31,10 @@ bareos:
       dbname: bareos
       user: bareos
       password: bareos
+    dynamic_config:
+      config_dir: dynamic_config
+      config_file: dynamic_config.conf
+      clients_config_file: dynamic_clients.conf
 
   storage:
     pkg: bareos-storage
