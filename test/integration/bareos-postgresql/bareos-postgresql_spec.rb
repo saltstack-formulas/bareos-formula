@@ -1,11 +1,23 @@
 # encoding: utf-8
 
+case os[:name]
+when 'centos'
+  repo_file = '/etc/yum.repos.d/bareos.repo'
+  repo_url = 'baseurl=http://download.bareos.org/bareos/release/latest/CentOS_7/'
+when 'ubuntu'
+  repo_file = '/etc/apt/sources.list.d/bareos.list'
+  repo_url = 'deb http://download.bareos.org/bareos/release/latest/xUbuntu_16.04 ./'
+when 'debian'
+  repo_file = '/etc/apt/sources.list.d/bareos.list'
+  repo_url = 'deb http://download.bareos.org/bareos/release/latest/Debian_9.0 ./'
+end
+
 control 'Bareos source list' do
   impact 0.6
   title 'Bareos source list'
   desc 'Ensures bareos source is installed'
-  describe file('/etc/apt/sources.list.d/bareos.list') do
-    its('content') { should match %r{deb http://download.bareos.org/bareos/release/latest/xUbuntu_16.04 ./} }
+  describe file(repo_file) do
+    its('content') { should match repo_url }
   end
 end
 
@@ -16,7 +28,7 @@ control 'Bareos packages' do
   %w(bareos-director bareos-database-postgresql).each do |pkg|
     describe package(pkg) do
       it { should be_installed }
-      its('version') { should eq '16.2.4-12.1' }
+      its('version') { should match '17.2.4-9.1' }
     end
   end
 end
