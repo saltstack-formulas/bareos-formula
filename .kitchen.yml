@@ -1,13 +1,28 @@
 ---
 driver:
-  name: vagrant
-  cpus: 2
+  name: docker
+
+driver_config:
+  use_sudo: false
+  privileged: true
+  provision_command: mkdir -p /run/sshd
 
 platforms:
-  - name: bento/debian-8
-  - name: bento/ubuntu-16.04
-  - name: bento/centos-6
-  - name: bento/centos-7
+  - name: debian-9
+    driver_config:
+      run_command: /lib/systemd/systemd
+      provision_command:
+        - apt-get install udev git -y
+  - name: centos-7
+    driver_config:
+      run_command: /lib/systemd/systemd
+      provision_command:
+        - yum install udev systemd-sysv libicu git -y
+  - name: ubuntu-16.04
+    driver_config:
+      run_command: /lib/systemd/systemd
+      provision_command:
+        - apt-get install udev git -y
 
 provisioner:
   name: salt_solo
