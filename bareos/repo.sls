@@ -6,6 +6,8 @@
   {% set distro = 'x' ~ grains.os ~ '_' ~ grains.osrelease %}
 {%- elif grains.os == 'Debian' %}
   {% set distro = grains.os ~ '_' ~ grains.osmajorrelease ~ '.0' %}
+{%- elif grains.os == 'RedHat' %}
+  {% set distro = 'RHEL' ~ '_' ~ grains.osmajorrelease %}
 {%- else %}
   {% set distro = grains.os ~ '_' ~ grains.osmajorrelease %}
 {%- endif %}
