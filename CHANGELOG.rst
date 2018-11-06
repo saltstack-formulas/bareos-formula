@@ -1,6 +1,11 @@
 bareos formula
 ==============
 
+0.0.5 (2018-07-11)
+- New upstream version
+  * Added travis support
+  * Fixed tests
+
 0.0.4 (2017-10-27)
 - Changed bconsole, filedaemon, storage & traymonitor State files:
   * Pin package versions

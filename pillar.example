@@ -10,7 +10,7 @@ bareos:
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
   # Generate_unique_password enables a mode where a password is generated on
-  # initial config and stored in /etc/bareos/bareos-dir.d/password.conf
+  # initial config and stored in /etc/bareos/password.conf
   #generate_unique_password: True
 
   use_upstream_repo: true

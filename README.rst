@@ -2,6 +2,8 @@
 bareos-formula
 ==============
 
+.. image:: https://travis-ci.org/saltstack-formulas/packages-formula.svg?branch=master
+
 A saltstack formula to install and configure `BareOS <https://www.bareos.org>`_,
 a master/slave server tool.
 
@@ -13,7 +15,7 @@ OS Compatibility
 
 Tested with:
 
-* Debian 8
+* Debian 9
 * CentOS 6 and 7
 * Ubuntu 16.04
 
