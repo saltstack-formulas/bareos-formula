@@ -11,7 +11,7 @@
 {%- else %}
   {% set distro = grains.os ~ '_' ~ grains.osmajorrelease %}
 {%- endif %}
-{% set url = bareos.repo.repo_url if bareos.repo.repo_url is defined else bareos.repo.url_base + '/' + bareos.repo.version + '/' + distro %}
+{% set url = bareos.repo.repo_url if bareos.repo.repo_url is defined else bareos.repo.url_base ~ '/' ~ bareos.repo.version ~ '/' ~ distro %}
 
 {% if grains.os_family == 'Debian' -%}
 bareos_repo:
