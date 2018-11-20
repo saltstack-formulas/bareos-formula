@@ -18,6 +18,10 @@ install_bconsole_package:
     - require:
       - pkgrepo: bareos_repo
     {% endif %}
+    {% if salt['pillar.get']('bareos:generate_unique_password', False) %}
+    - require_in:
+      - file: bareos_password_file
+    {% endif %}
 
 {% if bc_config != {} %}
 bareos_bconsole_cfg_file:
