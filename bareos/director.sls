@@ -20,6 +20,10 @@ include:
     - require:
       - pkgrepo: bareos_repo
     {% endif %}
+    {% if salt['pillar.get']('bareos:generate_unique_password', False) %}
+    - require_in:
+      - file: bareos_password_file
+    {% endif %}
 {% endfor %}
 
 install_director_plugins:
