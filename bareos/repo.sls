@@ -19,8 +19,12 @@ bareos_repo:
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
     - name: deb {{ url }} ./
     - file: {{ bareos.repo.file }}
+    {% if bareos.repo.key_url is defined -%}
+    - key_url: {{ url }}/Release.key
+    {% else -%}
     - keyid: {{ bareos.repo.keyid }}
     - keyserver: {{ bareos.repo.keyserver }}
+    {% endif -%}
 
 {%- elif grains.os_family == 'RedHat' %}
 bareos_repo:
