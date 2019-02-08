@@ -19,7 +19,7 @@ bareos_repo:
     - humanname: {{ bareos.repo.humanname }} - {{ bareos.repo.version }}
     - name: deb {{ url }} ./
     - file: {{ bareos.repo.file }}
-    {% if bareos.repo.key_url is defined -%}
+    {% if bareos.repo.use_key_url is defined -%}
     - key_url: {{ url }}/Release.key
     {% else -%}
     - keyid: {{ bareos.repo.keyid }}

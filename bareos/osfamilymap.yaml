@@ -1,6 +1,7 @@
 Debian:
   repo:
     file: /etc/apt/sources.list.d/bareos.list
+    use_key_url: true
 RedHat:
   repo:
     file: /etc/yum.repos.d/bareos.repo
