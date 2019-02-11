@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 bareos:
-  version: 17.2.4-9.1*
+  version: 18.2.5-139.1
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
   system_user: bareos
