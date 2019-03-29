@@ -11,27 +11,25 @@
 {{ n|indent(ind, True) }} {
 {{ _config(v, ind+ind_increment) }}
 {{ '}'|indent(ind, True) }}
-        {%- elif v is number %}
-{{ n|indent(ind, True) }}{{ operator }}{{ v }}
-        {%- elif v is string  %}
-{{ n|indent(ind, True) }}{{ operator }}{{ v }}
-        {%- else %}
+        {%- elif v is iterable and v is not string %}
 {{ _list(n, v, ind) }}
+        {%- else %}
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
         {%- endif %}
     {%- endfor %}
 {%- endmacro -%}
 {%- macro _list(x, y, ind1, operator=' = ') -%}
-        {%- for var in y %}
-                {%- if var is mapping %}
+    {%- for var in y %}
+        {%- if var is mapping %}
 {{ x|indent(ind1, True) }} {
 {{ _config(var, ind1+ind_increment) }}
 {{ '}'|indent(ind1, True) }}
-                {%- elif var is iterable and var is not string %}
+        {%- elif var is iterable and var is not string %}
 {{ _list(x,var, ind1) }}            
-                {%- else %}
+        {%- else %}
 {{ x|indent(ind1, True) }}{{ operator }}{{ var }}
         {%- endif %} 
-        {%- endfor %}
+    {%- endfor %}
 {%- endmacro -%}
 
 #
