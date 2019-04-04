@@ -129,3 +129,14 @@ bareos_database_grant:
     - watch_in:
       - service: bareos_director_service
 {% endif %}
+
+{% if bareos.director.plugins_files is defined and bareos.director.plugins_files_master_dir is defined %}
+{% for dir in bareos.director.plugins_files %}
+plugins_files_{{ dir }}:
+  file.recurse:
+    - name: {{ bareos['Plugin Directory']}}
+    - source: salt://{{bareos.director.plugins_files_master_dir}}/dir-plugins/{{dir}}
+    - include_empty: True
+    - exclude_pat: README*
+{% endfor %}
+{% endif %}
