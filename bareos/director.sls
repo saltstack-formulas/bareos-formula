@@ -4,7 +4,7 @@
 {% set dir_config = bareos.director.config if bareos.director.config is defined else {} %}
 {% set require_password = ['client', 'console', 'director', 'storage'] %}
 {% set backend_db_pkg = "bareos-database-" + bareos.director.database.backend %}
-{% set pkgs = [bareos.director.pkg, backend_db_pkg] %}
+{% set pkgs = [backend_db_pkg, bareos.director.pkg] %}
 
 include:
   - bareos.generate_password
