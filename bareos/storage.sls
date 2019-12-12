@@ -25,7 +25,7 @@ install_storage_package:
 
 install_storage_plugins:
   pkg.installed:
-    - pkgs: {{ bareos.storage.backends }}
+    - pkgs: {{ bareos.storage.backends|json }}
     {% if bareos.use_upstream_repo %}
     - require:
       - pkgrepo: bareos_repo
