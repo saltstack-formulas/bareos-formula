@@ -25,7 +25,7 @@ install_fd_package:
 
 install_fd_plugins:
   pkg.installed:
-    - pkgs: {{ bareos.filedaemon.plugins }}
+    - pkgs: {{ bareos.filedaemon.plugins|json }}
     {% if bareos.use_upstream_repo %}
     - require:
       - pkgrepo: bareos_repo
