@@ -28,7 +28,7 @@ include:
 
 install_director_plugins:
   pkg.installed:
-    - pkgs: {{ bareos.director.plugins }}
+    - pkgs: {{ bareos.director.plugins|json }}
     {% if bareos.use_upstream_repo %}
     - require:
       - pkgrepo: bareos_repo
