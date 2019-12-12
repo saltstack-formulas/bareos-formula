@@ -1,6 +1,10 @@
 bareos formula
 ==============
 
+0.1.0 (2019-02-07)
+- Fix debian repository for latest version (18.2)
+  * Use key_url to get GPG key from repo instead of keyserver
+
 0.0.5 (2018-07-11)
 - New upstream version
   * Added travis support

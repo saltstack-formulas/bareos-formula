@@ -1,7 +1,7 @@
 {%- set requires_name = ['director', 'job', 'jobdefs', 'schedule', 'fileset', 'client', 'storage', 'pool', 'catalog', 'messages', 'filedaemon', 'console', 'profile', 'counter', 'device', 'ndmp', 'autochanger', 'monitor'] %}
 {%- set ind_increment = 4 %}
 {%- macro _config(config, ind=4, operator=' = ') -%}
-    {%- for n, v in config.iteritems() %}
+    {%- for n, v in config.items() %}
         {#- The @ resources are a special case -#}
         {%- if n == "@" %}
             {%- for include in v %}
@@ -11,28 +11,38 @@
 {{ n|indent(ind, True) }} {
 {{ _config(v, ind+ind_increment) }}
 {{ '}'|indent(ind, True) }}
-        {%- elif v is number %}
-{{ n|indent(ind, True) }}{{ operator }}{{ v }}
-        {%- elif v is string  %}
-{{ n|indent(ind, True) }}{{ operator }}{{ v }}
+        {%- elif v is iterable and v is not string %}
+{{ _list(n, v, ind) }}
         {%- else %}
-            {%- for value in v %}
-{{ n|indent(ind, True) }}{{ operator }}{{ value }}
-            {%- endfor %}
+{{ n|indent(ind, True) }}{{ operator }}{{ v }}
         {%- endif %}
     {%- endfor %}
 {%- endmacro -%}
+{%- macro _list(x, y, ind1, operator=' = ') -%}
+    {%- for var in y %}
+        {%- if var is mapping %}
+{{ x|indent(ind1, True) }} {
+{{ _config(var, ind1+ind_increment) }}
+{{ '}'|indent(ind1, True) }}
+        {%- elif var is iterable and var is not string %}
+{{ _list(x,var, ind1) }}            
+        {%- else %}
+{{ x|indent(ind1, True) }}{{ operator }}{{ var }}
+        {%- endif %} 
+    {%- endfor %}
+{%- endmacro -%}
+
 #
 # This file managed by Salt, do not edit by hand!!
 # Modify the salt pillar for bareos, instead.
 #
-{%- for type, resources in config.iteritems() %}
+{%- for type, resources in config.items() %}
     {%- if type == "@" %}
         {%- for include in resources %}
 {{ type }}{{ include }}
         {%- endfor %}
     {% else %}
-        {%- for name, config in resources.iteritems() %}
+        {%- for name, config in resources.items() %}
 {{ type }} {
             {%- if (type|lower) in requires_name and ( (config.name is not defined) and (config.Name is not defined) )  %}
     Name = "{{ name }}"

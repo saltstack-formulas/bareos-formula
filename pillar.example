@@ -23,6 +23,8 @@ bareos:
     keyserver: keyserver.ubuntu.com
     humanname: Bareos Official Repository
     version: latest
+    # to get key from Release.key file in repo, keyid and keyserver will be ignored
+    use_key_url: true
 
   director:
     pkg: bareos-director
