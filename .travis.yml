@@ -12,10 +12,10 @@ env:
   matrix:
     - INSTANCE: bareos-postgresql-debian-9
     - INSTANCE: bareos-postgresql-centos-7
-    - INSTANCE: bareos-postgresql-ubuntu-1604
+    - INSTANCE: bareos-postgresql-ubuntu-1804
     - INSTANCE: bareos-mysql-debian-9
     - INSTANCE: bareos-mysql-centos-7
-    - INSTANCE: bareos-mysql-ubuntu-1604
+    - INSTANCE: bareos-mysql-ubuntu-1804
 
 script:
   - bundle exec kitchen verify ${INSTANCE}
