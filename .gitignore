@@ -16,7 +16,6 @@ doc/_build
 *.egg-info
 /etc/
 *_flymake.py
-Gemfile.lock
 htmlcov/
 .hypothesis/
 .idea
