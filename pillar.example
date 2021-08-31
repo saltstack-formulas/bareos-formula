@@ -7,6 +7,7 @@
 # bareos-storage and bareos-client from the upstream repository.
 
 bareos:
+  version: 19.0.1*
   config_dir: /etc/bareos
   default_password: default_bareos_formula_password
   # Generate_unique_password enables a mode where a password is generated on
