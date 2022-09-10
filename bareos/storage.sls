@@ -62,3 +62,14 @@ bareos_storage_service:
     - enable: true
     - require:
       - pkg: install_storage_package
+
+{% if bareos.storage.plugins_files is defined and bareos.storage.plugins_files_master_dir is defined %}
+{% for dir in bareos.storage.plugins_files %}
+plugins_files_{{ dir }}:
+  file.recurse:
+    - name: {{ bareos['Plugin Directory']}}
+    - source: salt://{{bareos.storage.plugins_files_master_dir}}/sd-plugins/{{dir}}
+    - include_empty: True
+    - exclude_pat: README*
+{% endfor %}
+{% endif %}

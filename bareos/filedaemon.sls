@@ -63,3 +63,15 @@ bareos_fd_service:
     - enable: true
     - require:
       - pkg: install_fd_package
+
+{% if bareos.filedaemon.plugins_files is defined and bareos.filedaemon.plugins_files_master_dir is defined %}
+{% for dir in bareos.filedaemon.plugins_files %}
+plugins_files_{{ dir }}:
+  file.recurse:
+    - name: {{ bareos['Plugin Directory']}}
+    - name: /usr/lib64/bareos/plugins
+    - source: salt://{{bareos.filedaemon.plugins_files_master_dir}}/fd-plugins/{{dir}}
+    - include_empty: True
+    - exclude_pat: README*
+{% endfor %}
+{% endif %}
