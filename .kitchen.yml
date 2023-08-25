@@ -18,7 +18,7 @@ platforms:
       run_command: /lib/systemd/systemd
       provision_command:
         - yum install udev systemd-sysv libicu git -y
-  - name: ubuntu-16.04
+  - name: ubuntu-18.04
     driver_config:
       run_command: /lib/systemd/systemd
       provision_command:
