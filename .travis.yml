@@ -10,9 +10,11 @@ before_install:
 
 env:
   matrix:
+    - INSTANCE: bareos-postgresql-debian-10
     - INSTANCE: bareos-postgresql-debian-9
     - INSTANCE: bareos-postgresql-centos-7
     - INSTANCE: bareos-postgresql-ubuntu-1604
+    - INSTANCE: bareos-mysql-debian-10
     - INSTANCE: bareos-mysql-debian-9
     - INSTANCE: bareos-mysql-centos-7
     - INSTANCE: bareos-mysql-ubuntu-1604

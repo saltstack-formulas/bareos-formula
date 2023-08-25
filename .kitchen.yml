@@ -8,6 +8,11 @@ driver_config:
   provision_command: mkdir -p /run/sshd
 
 platforms:
+  - name: debian-10
+    driver_config:
+      run_command: /lib/systemd/systemd
+      provision_command:
+        - apt-get install udev git -y
   - name: debian-9
     driver_config:
       run_command: /lib/systemd/systemd
